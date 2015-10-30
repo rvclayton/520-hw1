@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html lang = "en-US">
+
+  <head>
+
+    <title>Grid example</title>
+    <meta charset = "UTF-8">
+
+    <style>
+      h1 {
+        color: #fff
+        }
+    </style>
+
+  </head>
+
+  <body style = "background: rgb(0, 0, 0)">
+
+    <script src="raphael-min.js"></script>
+    <script src="hw1solutions.js"></script>
+
+    <h1>Best-first search!</h1>
+    <div id = "bfsDiv"></div>
+    After!
+    
+    <script>
+      (function (ht, wd, id) {
+	var paper = Raphael(document.getElementById(id), wd, ht);
+        var cols = 8;
+        var rows = 8;
+	var configuration = {
+	    obstructions: [
+	      [2, 2], [2, 3], [3, 2], [3, 3], [3, 4], [3, 5], [4, 4], [5, 4], [6, 3]
+	      ]
+	  , start: [2, 5]
+	  , goals: [ [4, 3] ]
+	  };
+
+	var grid = newGrid(paper, ht, wd, 0, 0, rows, cols, configuration);
+	grid.draw();
+
+        var goal = BFSGridSolver(
+          new BFSGridProblem(
+            new Coordinate(2, 5),
+            new Coordinate(4, 3),
+            [ new Coordinate(2, 2), new Coordinate(2, 3), new Coordinate(3, 2),
+              new Coordinate(3, 3), new Coordinate(3, 4), new Coordinate(3, 5),
+              new Coordinate(4, 4), new Coordinate(5, 4), new Coordinate(6, 3)
+            ],
+            rows,
+            cols),
+          grid);
+
+        if (goal == undefined)
+          alert("bfs grid solver didn't find a solution");
+        else {
+          }
+        })(500, 650, "bfsDiv");
+    </script>
+
+    <h1>Depth-first search!</h1>
+    <div id = "dfsDiv"></div>
+    
+    <script>
+      (function (ht, wd, id) {
+	var paper = Raphael(document.getElementById(id), wd, ht);
+        var cols = 8;
+        var rows = 8;
+	var configuration = {
+	    obstructions: [
+	      [2, 2], [2, 3], [3, 2], [3, 3], [3, 4], [3, 5], [4, 4], [5, 4], [6, 3]
+	      ]
+	  , start: [2, 5]
+	  , goals: [ [4, 3] ]
+	  };
+
+	var grid = newGrid(paper, ht, wd, 0, 0, rows, cols, configuration);
+	grid.draw();
+
+        var goal = DFSGridSolver(
+          new DFSGridProblem(
+            new Coordinate(2, 5),
+            new Coordinate(4, 3),
+            [ new Coordinate(2, 2), new Coordinate(2, 3), new Coordinate(3, 2),
+              new Coordinate(3, 3), new Coordinate(3, 4), new Coordinate(3, 5),
+              new Coordinate(4, 4), new Coordinate(5, 4), new Coordinate(6, 3)
+            ],
+            rows,
+            cols),
+          grid);
+
+        if (goal == undefined)
+          alert("dfs grid solver didn't find a solution");
+        else {
+          }
+        })(500, 650, "dfsDiv");
+    </script>
+  </body>
+</html>
