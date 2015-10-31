@@ -16,11 +16,13 @@ tests	:
 	  tsc --out $(tf) dfs-grid.ts test-dfsgridsolver.ts && nodejs $(tf)
 	  tsc --out $(tf) test-bfsgridstate.ts && nodejs $(tf)
 	  tsc --out $(tf) test-bfsgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-bfsgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-hdfsgridsolver.ts && nodejs $(tf)
 
 update	: $(d)/hw1solutions.js
 
 hw1solutions.js	\
-	: Coordinate.ts dfs-grid.ts bfs-grid.ts grid.ts indexed-grid.ts
+	: dfs-grid.ts bfs-grid.ts hdfs-grid.ts grid.ts indexed-grid.ts
 	  tsc --out $@ $^
 
 clean	:
