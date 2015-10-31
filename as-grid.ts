@@ -12,9 +12,6 @@ class ASGridFrontier {
     // this.printStack('p-queue before add():');
     // console.log('states.length = ' + states.length);
 
-    for (var i = states.length - 1; i > -1; --i)
-      this.stack.push(states[i]);
-
     this.stack.sort(
       function (a: ASGridState, b: ASGridState): number {
 
@@ -26,6 +23,9 @@ class ASGridFrontier {
 	else
 	  return a.move() - b.move();
 	});
+
+    for (var i = states.length - 1; i > -1; --i)
+      this.stack.push(states[i]);
 
     // this.printStack('p-queue after add():');
     }
