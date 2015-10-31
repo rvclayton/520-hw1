@@ -1,3 +1,6 @@
+/// <reference path = "Coordinate.ts"/>
+
+
 var newGrid = function(
 
   // Return a new grid.
@@ -100,8 +103,8 @@ var newGrid = function(
     , numberCell: function(x, y, n) {
 
         var fontSize = Math.floor(gridRowHt*0.2);
-        var x = gridUlx + (x + 0.15)*gridColWd;
-	var y = gridUly + (rows - y - 0.8)*gridRowHt;
+        x = gridUlx + (x + 0.15)*gridColWd;
+	y = gridUly + (rows - y - 0.8)*gridRowHt;
 
 	paper.text(x, y, n.toString()).attr({
           'font-size': fontSize,
@@ -118,6 +121,18 @@ var newGrid = function(
 	  gridUlx + x*gridColWd,
 	  gridUly + (rows - y - 1)*gridRowHt
 	  ];
+        }
+
+    , valueCell: function(c: Coordinate, v: number): void {
+
+        var fontSize = Math.floor(gridRowHt*0.2);
+        var x = gridUlx + (c.x() + 0.15)*gridColWd;
+	var y = gridUly + (rows - c.y() - 0.2)*gridRowHt;
+
+	paper.text(x, y, v.toString()).attr({
+          'font-size': fontSize,
+          'fill': 'white'
+          });
         }
     };
 
