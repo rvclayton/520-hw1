@@ -18,11 +18,13 @@ tests	:
 	  tsc --out $(tf) test-bfsgridsolver.ts && nodejs $(tf)
 	  tsc --out $(tf) test-bfsgridsolver.ts && nodejs $(tf)
 	  tsc --out $(tf) test-hdfsgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-asgridsolver.ts && nodejs $(tf)
 
 update	: $(d)/hw1solutions.js
 
 hw1solutions.js	\
-	: dfs-grid.ts bfs-grid.ts hdfs-grid.ts grid.ts indexed-grid.ts
+	: dfs-grid.ts bfs-grid.ts hdfs-grid.ts as-grid.ts indexed-grid.ts \
+	  grid.ts
 	  tsc --out $@ $^
 
 clean	:
