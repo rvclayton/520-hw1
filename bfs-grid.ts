@@ -136,7 +136,7 @@ class BFSGridProblem {
 
     // Return this problem's start state.
 
-    return new BFSGridState(this.start);
+    return BFSGridState.new(this.start);
     }
 
 
