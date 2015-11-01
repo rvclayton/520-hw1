@@ -26,27 +26,45 @@ Graph {
 
     this.checkNodeDefinitions(ndefs);
 
-    var nodeNames = [ ];
-    var nodeEdges = { };
-    var nodeCenters = { };
-    var nodeCosts = { };
+    var nodeSet = {};
+    var edgeSet = {};
 
     setIterate(ndefs, function(n) {
-      nodeNames.push(n.name);
-      nodeCosts[n.name] = n.cost;
-      nodeCenters[n.name] = n.center;
-      nodeEdges[n.name] = n.neighbors;
+      nodeSet[n.name] = {
+          name: n.name
+	, center: n.center
+	, cost: n.cost
+	, neighbors: { }
+	}
       });
 
-    this.nodeNames = nodeNames;
-    this.nodeEdges = nodeEdges;
-    this.nodeCenters = nodeCenters;
-    this.nodeCosts = nodeCosts;
+    setIterate(ndefs, function(node) {
+      setIterate(node.neighbors, function (edge) {
+        var e = {
+	    fromNode: nodeSet[node.name]
+	  , toNode: nodeSet[edge[0]]
+	  , cost: edge[1]
+	  };
+	edgeSet[node.name + edge[0]] = e;
+	nodeSet[node.name].neighbors[edge[0]] = e;
+	})
+      });
+      
+    this.nodeSet = nodeSet;
+    this.edgeSet = edgeSet;
     }
 
-  private nodeNames;
-  private nodeCosts;
-  private nodeCenters;
-  private nodeEdges;
+
+  edgeSetIterate(f: (e: any) => any): void {
+    for (var nodeName in this.nodeSet) {
+      for (var edgeName in this.nodeSet[nodeName].neighbors) {
+        // console.log('do edge ' + nodeName + ' -> ' + edgeName);
+        f(this.nodeSet[nodeName].neighbors[edgeName]);
+	}
+      }
+    }
+
+  private nodeSet;
+  private edgeSet;
   }
 
