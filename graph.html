@@ -18,19 +18,85 @@
 
   <body style = "background: #000">
 
-    <p>before!</p>
+    <p>The problem graph!</p>
     <div id = "hw1graph"></div>
-    <p>after!</p>
     
     <script src = "raphael-min.js"></script>
     <script src = "hw1solutions.js"></script>
 
     <script>
+      var g = makeGraph();
+
       (function (divID, ht, wd) {
-         var g = makeGraph();
          var paper = Raphael(document.getElementById(divID), wd, ht);
          drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
          })("hw1graph", 400, 500);
+    </script>
+
+    <p>Graph Breadth-FS!</p>
+    <div id = "graphBFS"></div>
+    
+    <script>
+      (function (divID, ht, wd) {
+         var paper = Raphael(document.getElementById(divID), wd, ht);
+         BFSGraphSearch(g);
+         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         })("graphBFS", 400, 500);
+    </script>
+
+    <p>Graph DFS!</p>
+    <div id = "graphDFS"></div>
+    
+    <script>
+      (function (divID, ht, wd) {
+         var paper = Raphael(document.getElementById(divID), wd, ht);
+         DFSGraphSearch(g);
+         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         })("graphDFS", 400, 500);
+    </script>
+
+    <p>Graph iterated deepening search!</p>
+    <div id = "graphID"></div>
+    
+    <script>
+      (function (divID, ht, wd) {
+         var paper = Raphael(document.getElementById(divID), wd, ht);
+         IDGraphSearch(g);
+         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         })("graphID", 400, 500);
+    </script>
+
+    <p>Graph LCFS!</p>
+    <div id = "graphLCFS"></div>
+    
+    <script>
+      (function (divID, ht, wd) {
+         var paper = Raphael(document.getElementById(divID), wd, ht);
+         LCFSGraphSearch(g);
+         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         })("graphLCFS", 400, 500);
+    </script>
+
+    <p>Graph Best-FS!</p>
+    <div id = "graphBestFS"></div>
+    
+    <script>
+      (function (divID, ht, wd) {
+         var paper = Raphael(document.getElementById(divID), wd, ht);
+         BestFSGraphSearch(g);
+         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         })("graphBestFS", 400, 500);
+    </script>
+
+    <p>Graph ASS!</p>
+    <div id = "graphASS"></div>
+    
+    <script>
+      (function (divID, ht, wd) {
+         var paper = Raphael(document.getElementById(divID), wd, ht);
+         ASGraphSearch(g);
+         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         })("graphASS", 400, 500);
     </script>
 
   </body>
