@@ -57,11 +57,18 @@ Graph {
 
   edgeSetIterate(f: (e: any) => any): void {
     for (var nodeName in this.nodeSet) {
-      for (var edgeName in this.nodeSet[nodeName].neighbors) {
+     var neighbors = this.nodeSet[nodeName].neighbors
+     for (var edgeName in neighbors) {
         // console.log('do edge ' + nodeName + ' -> ' + edgeName);
-        f(this.nodeSet[nodeName].neighbors[edgeName]);
+        f(neighbors[edgeName]);
 	}
       }
+    }
+
+
+  nodeSetIterate(f: (n: any) => any): void {
+    for (var nodeName in this.nodeSet)
+      f(this.nodeSet[nodeName]);
     }
 
   private nodeSet;
