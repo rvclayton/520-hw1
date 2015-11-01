@@ -35,7 +35,7 @@ hw1graph.js \
 	  tsc --out $@ $^
 
 clean	:
-	  rm -f test.js hw1solutions.js
+	  rm -f test.js hw1solutions.js hw1graph.js
 	  crm ; for f in *.ts ; do \
 	    rm -f $$(basename $$f .ts).js ; \
 	  done
