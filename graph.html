@@ -3,25 +3,36 @@
 <html lang = "en-US">
 
   <head>
+
     <meta charset = "UTF-8">
+
     <title>homework 1 graph</title>
+
+    <style>
+      p {
+        color: #fff
+        }
+    </style>
+
   </head>
 
-  <body>
+  <body style = "background: #000">
 
-    before!
+    <p>before!</p>
     <div id = "hw1graph"></div>
-    after!
+    <p>after!</p>
     
     <script src = "raphael-min.js"></script>
-    <script src = "hw1graph.js"></script>
+    <script src = "hw1solutions.js"></script>
+
     <script>
       (function (divID, ht, wd) {
          var g = makeGraph();
          var paper = Raphael(document.getElementById(divID), wd, ht);
          drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
-         })("hw1graph", 300, 400);
+         })("hw1graph", 400, 500);
     </script>
+
   </body>
 
 </html>
