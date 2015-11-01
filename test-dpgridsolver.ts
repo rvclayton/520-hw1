@@ -3,15 +3,21 @@
 
 var NullGrid = (function () {
   function F() { }
-  F.prototype.numberCell = function (x, y, n) { }
-  F.prototype.valueCell = function (c, v) { }
+  F.prototype.numberCell = function (x, y, n) {
+    // console.log('cell (' + x + ', ' + y + ') has number ' + n);
+    }
+  F.prototype.valueCell = function (c, v) { 
+    // console.log('cell ' + c.toString() + ' has value ' + v);
+    }
   return F
   })();
 var nullGrid = new NullGrid();
 
+
 function announceTest(label) {
   // console.log('\n' + label + ' test.');
   }
+
 
 function pathLength(state): number {
   var i = 0;
@@ -20,38 +26,40 @@ function pathLength(state): number {
   return i;
   }
 
-announceTest('unsolvable 2x2');
 
 var start = new Coordinate(0, 0);
 var goal = new Coordinate(1, 1);
-var p = new DPGridProblem(
-  start, goal, [ new Coordinate(1, 0), new Coordinate(0, 1)], 2, 2);
+var p, pathEnd;
 
-var pathEnd = DPGridSolver(p, nullGrid);
+if (false) {
+  announceTest('unsolvable 2x2');
 
-if (pathEnd != undefined)
-  throw new Error("unsolvable problem has been solved");
+  p = new DPGridProblem(
+    start, goal, [ new Coordinate(1, 0), new Coordinate(0, 1)], 2, 2);
+
+  pathEnd = DPGridSolver(p, nullGrid);
+
+  if (pathEnd != undefined)
+    throw new Error("unsolvable problem has been solved");
+  }
 
 
 if (true) {
 
   announceTest('2-step solvable 2x2');
 
-  p = new DPGridProblem(start, goal, [ ], 2, 2);
+  p = new DPGridProblem(start, goal, [ new Coordinate(0, 1) ], 2, 2);
   pathEnd = DPGridSolver(p, nullGrid);
 
   if (pathEnd == undefined)
     throw new Error("Solvable 2x2 problem didn't find a solution");
-  if (!p.isGoalState(pathEnd))
-    throw new Error("2x2 problem solution didn't reach the goal state");
-  if (pathLength(pathEnd) != 3)
-    throw new Error("2x2 solution doesn't have three states");
-  pathEnd = pathEnd.parent();
-  if (!pathEnd.coordinate().equal(new Coordinate(0, 1)))
-    throw new Error("2x2 solution doesn't favor moving up");
-  pathEnd = pathEnd.parent();
+
   if (!pathEnd.coordinate().equal(start))
-    throw new Error("2x2 solution didn't begin at the start state");
+    throw new Error("2x2 problem solution didn't reach the start state");
+
+  if (pathLength(p.startState()) != 3)
+    throw new Error(
+      "2x2 solution should have three states, has " + pathLength(pathEnd));
   }
   
 
@@ -65,14 +73,14 @@ if (true) {
 
   if (pathEnd == undefined)
     throw new Error("1-step solvable problem didn't find a solution");
-  if (!p.isGoalState(pathEnd))
-    throw new Error("1-step solvable problem didn't reach the goal state");
+  if (!pathEnd.coordinate().equal(start))
+    throw new Error("1-step solvable problem didn't reach the start state");
   if (pathLength(pathEnd) != 2)
     throw new Error(
       "solution should have 2 states, has " + pathLength(pathEnd));
   pathEnd = pathEnd.parent();
-  if (!pathEnd.coordinate().equal(start))
-    throw new Error("solution begin at the start state");
+  if (!p.isGoalState(pathEnd))
+    throw new Error("1-step solution begin at the start state");
   }
   
 
@@ -95,6 +103,6 @@ if (true) {
 
   if (pathEnd == undefined)
     throw new Error("Solvable problem didn't find a solution");
-  if (!p.isGoalState(pathEnd))
+  if (!pathEnd.coordinate().equal(start))
     throw new Error("Solvable problem didn't reach the goal state");
   }
