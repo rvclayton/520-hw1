@@ -5,22 +5,24 @@
 // to the goal.
 
 
-class DPGridFrontier {
+class
+DPGridFrontier {
 
 
   add(states: DPGridState []): void {
 
-    // this.printStack('p-queue before add():');
+    // this.printStack('frontier before add():');
     // console.log('states.length = ' + states.length);
 
     for (var i = states.length - 1; i > -1; --i)
       this.stack.push(states[i]);
 
-    // this.printStack('p-queue after add():');
+    // this.printStack('frontier after add():');
     }
     
 
   constructor(start: DPGridState) {
+    // console.log('start frontier with ' + start.toString());
     this.stack = [ start ];
     }
 
@@ -31,13 +33,13 @@ class DPGridFrontier {
     
 
   nextState(): DPGridState {
-    // this.printStack('p-queue before nextState():');
+    // this.printStack('frontier before nextState():');
 
     if (this.empty())
       throw "calling nextState() on an empty frontier";
     else {
       var s = this.stack.shift();
-      // this.printStack('p-queue after nextState():');
+      // this.printStack('frontier after nextState():');
       return s;
       }
     }
@@ -55,9 +57,11 @@ class DPGridFrontier {
 
 
 
-class DPGridProblem {
+class
+DPGridProblem {
 
-  private allNeighbors(s: DPGridState): DPGridState [] {
+  private
+  allNeighbors(s: DPGridState): DPGridState [] {
 
     // Return an array containing all the neighbors (valid and invalid) of the
     // given state.
@@ -78,28 +82,16 @@ class DPGridProblem {
     private obstructions: Coordinate [],
     private rows: number,
     private cols: number) {
-
-    this.g = new DPGridState(goal);
     }
 
 
   goalState(): DPGridState {
-    return this.g;
+    return new DPGridState(this.goal);
     }
 
 
   isGoalState(s: DPGridState): boolean {
-    return this.g == s;
-    }
-
-
-  private
-  manhattanDistance(s1: DPGridState, s2: DPGridState): number {
-
-    var c1 = s1.coordinate()
-    var c2 = s2.coordinate()
-
-    return Math.abs(c1.x() - c2.x()) + Math.abs(c1.y() - c2.y())
+    return this.goal.equal(s.coordinate());
     }
 
 
@@ -111,15 +103,6 @@ class DPGridProblem {
     // console.log('Neighbors of ' + s.coordinate().toString());
 
     return this.validNeighbors(s, this.allNeighbors(s));
-    }
-
-
-  private
-  setCost(s: DPGridState): DPGridState {
-
-    s.setCost(this.manhattanDistance(s, this.goalState()));
-
-    return s;
     }
 
 
@@ -141,9 +124,14 @@ class DPGridProblem {
     var n: DPGridState [] = [ ];
 
     for (var i = neighbors.length - 1; i > -1; --i) {
+
       var s: DPGridState = neighbors[i];
-      if (this.validState(s)) {
-        n.push(this.setCost(s));
+
+      // If a neighbor has a defined cost, then there's a shorter path to the
+      // neighbor and it should be (multi-path) pruned.
+
+      if (this.validState(s) && (s.cost() == undefined)) {
+        n.push(s);
         // console.log('  ' + s.coordinate().toString());
 	}
       }	
@@ -152,7 +140,8 @@ class DPGridProblem {
     }
 
 
-  private validState(child: DPGridState): boolean {
+  private
+  validState(child: DPGridState): boolean {
 
     var c = child.coordinate();
 
@@ -170,20 +159,21 @@ class DPGridProblem {
 
     return true;
     }
-
-  private g: DPGridState;
   }
 
   
-class DPGridState {
+class
+DPGridState {
 
 
-  /* private */ constructor(c: Coordinate) {
+  /* private */
+  constructor(c: Coordinate) {
 
     // This constructor shouldn't be called outside this class.  Use the
     // DPGridState.new() factory instead.
 
     this.c = c;
+    // console.log('construct ' + this.toString());
     }
 
 
@@ -202,7 +192,8 @@ class DPGridState {
     }
 
 
-  private static label(c: Coordinate): string {
+  private static
+  label(c: Coordinate): string {
     return c.x().toString() + '.' + c.y().toString();
     }
 
@@ -212,7 +203,8 @@ class DPGridState {
     }
 
 
-  static new(source: any, m?: GridMove) {
+  static
+  new(source: any, m?: GridMove) {
 
     // Return the state associated with a coordinate.  If source is a
     // coordinate, m should be undefined. If source is a state, them m should
@@ -251,6 +243,7 @@ class DPGridState {
       s = new DPGridState(c);
       if (m != undefined) {
         s.p = source;
+	// console.log(s.toString() + " -> " + source.toString());
 	s.m = m;
         }
       DPGridState.cache[l] = s;
@@ -287,7 +280,7 @@ class DPGridState {
       msg = msg + ', ' + GridMove[this.m] + ', {' + this.p.c.toString() + '}';
       
     if (this.cst != undefined)
-      msg = msg + ', ' + this.cst;
+      msg = msg + ', c: ' + this.cst;
 
     return msg + ' }';
     }
@@ -305,12 +298,12 @@ class DPGridState {
 function
 DPGridSolver(p: DPGridProblem, grid): DPGridState {
 
-  var s = p.startState();
-  var f: DPGridFrontier = new DPGridFrontier(s);
+  var setCosts = function(s: DPGridState): void {
 
-  var setCosts = function(): void {
+    var f: DPGridFrontier = new DPGridFrontier(s);
 
     var setCost = function(s: DPGridState, c: number): void {
+      // console.log('set cost for ' + s.toString() + ' to ' + c);
       s.setCost(c);
       grid.valueCell(s.coordinate(), c);
       }
@@ -324,42 +317,34 @@ DPGridSolver(p: DPGridProblem, grid): DPGridState {
 
       while (neighbors.length > 0) {
 	var n = neighbors.pop();
-	if (n.cost() == undefined || n.cost() > c)
-	  setCost(n, c);
-	  f.add([n]);
-	  }
+	// console.log('neighbor is ' + n.toString());
+	setCost(n, c);
+	f.add([n]);
+        } 
       }
     while (!f.empty());
     };
 
-  var tracePath = function(s: DPGridState): DPGridState {
+  var tracePath = function(start: DPGridState): void {
 
-    var g = p.goalState();
-    var pathLength = 0;
+    var stateCount = 0;
+    var s;
+    
+    for (s = start ; s != undefined; s = s.parent())
+      ++stateCount;
 
-    var minCost = function(states: DPGridState []): DPGridState {
-
-      var minState = states[0];
-      
-      for (var i = states.length - 1; i > 0; --i)
-        if (minState.cost() > states[i].cost())
-	  minState = states[i];
-
-      return minState;
-      }
-
-    while ((s != undefined) && p.isGoalState(s)) {
-      grid.numberCell(s.coordinate().x(), s.coordinate().y(), pathLength++);
-      s = minCost(p.neighbors(s));
-      }
-
-    if (s == g)
-      grid.numberCell(s.coordinate().x(), s.coordinate().y(), pathLength);
-      
-    return s;
+    for (s = start ; s != undefined; s = s.parent())
+      grid.numberCell(s.coordinate().x(), s.coordinate().y(), stateCount--);
     };
     
-  setCosts();
+  DPGridState.reset();
   
-  return tracePath(p.startState());
+  setCosts(p.goalState());
+  if (p.startState().cost() != undefined)
+    tracePath(p.startState());
+
+  if (p.startState().cost() == undefined)
+    return undefined;
+  else
+    return p.startState();
   };
