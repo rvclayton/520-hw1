@@ -23,19 +23,15 @@ tests	:
 	  tsc --out $(tf) test-dpgridsolver.ts && nodejs $(tf)
 	  tsc --out $(tf) test-hw1graph.ts && nodejs $(tf)
 
-update	: $(d)/hw1solutions.js
+update	: $(d)/hw1solutions.js $(d)/hw1graph.js
 
 hw1solutions.js	\
 	: dfs-grid.ts bfs-grid.ts hdfs-grid.ts as-grid.ts dp-grid.ts grid.ts \
-	  indexed-grid.ts 
-	  tsc --out $@ $^
-
-hw1graph.js \
-	: Graph.ts hw1graph.ts
+	  indexed-grid.ts Graph.ts hw1graph.ts
 	  tsc --out $@ $^
 
 clean	:
-	  rm -f test.js hw1solutions.js hw1graph.js
+	  rm -f test.js hw1solutions.js
 	  crm ; for f in *.ts ; do \
 	    rm -f $$(basename $$f .ts).js ; \
 	  done
