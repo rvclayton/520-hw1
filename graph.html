@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html lang = "en-US">
+
+  <head>
+    <meta charset = "UTF-8">
+    <title>homework 1 graph</title>
+  </head>
+
+  <body>
+
+    before!
+    <div id = "hw1graph"></div>
+    after!
+    
+    <script src = "raphael-min.js"></script>
+    <script src = "hw1graph.js"></script>
+    <script>
+      (function (divID, ht, wd) {
+         var g = makeGraph();
+         var paper = Raphael(document.getElementById(divID), wd, ht);
+         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         })("hw1graph", 400, 300);
+    </script>
+  </body>
+
+</html>
