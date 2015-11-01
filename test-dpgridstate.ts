@@ -76,3 +76,10 @@ if (s3 != s1)
 s1 = DPGridState.new(s3, GridMove.right);
 if (s2 != s1)
   throw new Error("Moving right, left, right doesn't produce the same node");
+
+DPGridState.reset();
+s1 = DPGridState.new(new Coordinate(0, 0));
+DPGridState.reset();
+s2 = DPGridState.new(new Coordinate(0, 0));
+if (s1 == s2)
+  throw new Error("Resetting returns old states");
