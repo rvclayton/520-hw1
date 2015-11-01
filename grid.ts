@@ -127,7 +127,7 @@ var newGrid = function(
 
         var fontSize = Math.floor(gridRowHt*0.2);
         var x = gridUlx + (c.x() + 0.15)*gridColWd;
-	var y = gridUly + (rows - c.y() - 0.2)*gridRowHt;
+	var y = gridUly + (rows - c.y() - 0.15)*gridRowHt;
 
 	paper.text(x, y, v.toString()).attr({
           'font-size': fontSize,
