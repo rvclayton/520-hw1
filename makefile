@@ -19,6 +19,7 @@ tests	:
 	  tsc --out $(tf) test-bfsgridsolver.ts && nodejs $(tf)
 	  tsc --out $(tf) test-hdfsgridsolver.ts && nodejs $(tf)
 	  tsc --out $(tf) test-asgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-dpgridstates.ts && nodejs $(tf)
 	  tsc --out $(tf) test-dpgridsolver.ts && nodejs $(tf)
 
 update	: $(d)/hw1solutions.js
