@@ -1,10 +1,10 @@
 function
-manhattanDistance(s1: GridState, s2: GridState): number {
+assert(test: boolean, msg: string): void {
+  if (!test) throw new Error(msg);
+  }
 
-  // Return the Manhattan distance between the given points.
-  
-  var c1 = s1.coordinate()
-  var c2 = s2.coordinate()
 
-  return Math.abs(c1.x() - c2.x()) + Math.abs(c1.y() - c2.y())
+function
+setIterate(l, f) {
+  for (var i = l.length - 1; i > -1; --i) f(l[i]);
   }
