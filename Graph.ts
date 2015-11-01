@@ -11,6 +11,7 @@ Graph {
       assert(nd.cost != undefined, "node definition has no cost");
       assert(nd.center != undefined, "node definition has no center");
       assert(nd.neighbors != undefined, "node definition has no neighbors");
+      assert(nd.flags != undefined, "node definition has no flags");
       });
 
     var names = { };
@@ -35,6 +36,8 @@ Graph {
 	, center: n.center
 	, cost: n.cost
 	, neighbors: { }
+	, start: n.flags.indexOf("s") != -1
+	, goal: n.flags.indexOf("g") != -1
 	}
       });
 
@@ -50,8 +53,25 @@ Graph {
 	})
       });
       
+    for (var s in nodeSet)
+      if (nodeSet[s].start) {
+        this.start = s;
+	break;
+	}
+	
     this.nodeSet = nodeSet;
     this.edgeSet = edgeSet;
+    }
+
+
+  edgeCost(from, to): number {
+
+    var e = this.edgeSet[from + to];
+
+    assert(e != undefined,
+      "edgeCost(" + from + ", " + to + ") failed to find the edge");
+
+    return e.cost;
     }
 
 
@@ -66,12 +86,41 @@ Graph {
     }
 
 
+  isGoalState(s): boolean {
+    return this.nodeSet[s].goal;
+    }
+
+
+  neighbors(s) {
+
+    var n = [];
+
+    for (var e in this.nodeSet[s].neighbors)
+      n.push(e);
+      
+    return n;
+    }
+
+
+  nodeCost(n): number {
+    assert(this.nodeSet[n] != undefined, "nodeCost(" + n + ") is undefined");
+    return this.nodeSet[n].cost;
+    }
+
+
   nodeSetIterate(f: (n: any) => any): void {
     for (var nodeName in this.nodeSet)
       f(this.nodeSet[nodeName]);
     }
 
+
+  startState() {
+    return this.start;
+    }
+
+
   private nodeSet;
   private edgeSet;
+  private start;
   }
 
