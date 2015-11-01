@@ -30,6 +30,9 @@ hw1solutions.js	\
 	  indexed-grid.ts Graph.ts hw1graph.ts
 	  tsc --out $@ $^
 
+run	: hw1solutions.js graph.html
+	  firefox -remote "openURL(file://$(PWD)/graph.html, new-tab)"
+
 clean	:
 	  rm -f test.js hw1solutions.js
 	  crm ; for f in *.ts ; do \
