@@ -21,12 +21,17 @@ tests	:
 	  tsc --out $(tf) test-asgridsolver.ts && nodejs $(tf)
 	  tsc --out $(tf) test-dpgridstates.ts && nodejs $(tf)
 	  tsc --out $(tf) test-dpgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-hw1graph.ts && nodejs $(tf)
 
 update	: $(d)/hw1solutions.js
 
 hw1solutions.js	\
 	: dfs-grid.ts bfs-grid.ts hdfs-grid.ts as-grid.ts dp-grid.ts grid.ts \
 	  indexed-grid.ts 
+	  tsc --out $@ $^
+
+hw1graph.js \
+	: Graph.ts hw1graph.ts
 	  tsc --out $@ $^
 
 clean	:
