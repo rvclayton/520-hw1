@@ -26,6 +26,7 @@
 
     <script>
       var g = makeGraph();
+      var qht = 50;
 
       (function (divID, ht, wd) {
          var g = makeGraph();
@@ -54,9 +55,12 @@
     
     <script>
       (function (divID, ht, wd) {
+         var g = makeGraph();
          var paper = Raphael(document.getElementById(divID), wd, ht);
-         DFSGraphSearch(g);
-         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         var log = DFSGraphSearch(g);
+         var logAnimator = new AnimateLog(
+           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
          })("graphDFS", 400, 500);
     </script>
 
@@ -65,9 +69,12 @@
     
     <script>
       (function (divID, ht, wd) {
+         var g = makeGraph();
          var paper = Raphael(document.getElementById(divID), wd, ht);
-         IDGraphSearch(g);
-         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         var log = IDGraphSearch(g);
+         var logAnimator = new AnimateLog(
+           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
          })("graphID", 400, 500);
     </script>
 
@@ -76,9 +83,12 @@
     
     <script>
       (function (divID, ht, wd) {
+         var g = makeGraph();
          var paper = Raphael(document.getElementById(divID), wd, ht);
-         LCFSGraphSearch(g);
-         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         var log = LCFGraphSearch(g);
+         var logAnimator = new AnimateLog(
+           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
          })("graphLCFS", 400, 500);
     </script>
 
@@ -87,9 +97,12 @@
     
     <script>
       (function (divID, ht, wd) {
+         var g = makeGraph();
          var paper = Raphael(document.getElementById(divID), wd, ht);
-         BestFSGraphSearch(g);
-         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         var log = BestFSGraphSearch(g);
+         var logAnimator = new AnimateLog(
+           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
          })("graphBestFS", 400, 500);
     </script>
 
@@ -98,9 +111,12 @@
     
     <script>
       (function (divID, ht, wd) {
+         var g = makeGraph();
          var paper = Raphael(document.getElementById(divID), wd, ht);
-         ASGraphSearch(g);
-         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+         var log = ASGraphSearch(g);
+         var logAnimator = new AnimateLog(
+           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
          })("graphASS", 400, 500);
     </script>
 
