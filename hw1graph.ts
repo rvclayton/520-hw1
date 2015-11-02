@@ -8,7 +8,7 @@ var foregroundColor = 'white';
 
 function
 drawGraph(
-  g: Graph, paper, ht, wd, ul: Coordinate, logAnimator: AnimateLog): void {
+  g: Graph, paper, ht, wd, ul: Coordinate, logAnimator: AnimateLog, options): void {
 
 
   var drawEdge = function (e): void {
@@ -21,9 +21,11 @@ drawGraph(
     var lx = (fromC.x() + toC.x())/2;
     var ly = (fromC.y() + toC.y())/2;
     
-    paper.circle(lx, ly, nodeRadius/2)
-      .attr({ stroke: backgroundColor, fill: backgroundColor });
-    drawText(lx, ly, e.cost.toString());
+    if (!options.noEdgeWeights) {
+      paper.circle(lx, ly, nodeRadius/2)
+	.attr({ stroke: backgroundColor, fill: backgroundColor });
+      drawText(lx, ly, e.cost.toString());
+      }
     }
 
 
@@ -33,8 +35,12 @@ drawGraph(
 
     paper.circle(c.x(), c.y(), nodeRadius)
       .attr({ stroke: foregroundColor, fill: backgroundColor });
-    drawText(c.x(), c.y() - nodeRadius*0.5, n.name);
-    drawText(c.x(), c.y() + nodeRadius*0.5, n.cost.toString());
+    if (options.noCostHeuristics)
+      drawText(c.x(), c.y(), n.name);
+    else {
+      drawText(c.x(), c.y() - nodeRadius*0.5, n.name);
+      drawText(c.x(), c.y() + nodeRadius*0.5, n.cost.toString());
+      }
     }
 
 
@@ -65,6 +71,8 @@ drawGraph(
       this.data('logAnimator').step();
       });
       
+  options = options || { };
+  
   g.edgeSetIterate(drawEdge);
   g.nodeSetIterate(drawNode);
   }
