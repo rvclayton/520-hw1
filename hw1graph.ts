@@ -25,7 +25,7 @@ drawGraph(
       .attr({ stroke: backgroundColor, fill: backgroundColor });
     drawText(lx, ly, e.cost.toString());
     }
-    
+
 
   var drawNode = function (n): void {
 
@@ -60,12 +60,8 @@ drawGraph(
   
   var clickPad = paper.rect(0, 0, ht, wd)
     .attr('fill', backgroundColor)
-    .data('clickCount', 0)
     .data('logAnimator', logAnimator)
     .click(function (e) {
-      var cc = this.data('clickCount')
-      console.log('click ' + ++cc);
-      this.data('clickCount', cc);
       this.data('logAnimator').step();
       });
       
@@ -114,9 +110,9 @@ makeGraph(): Graph {
 
 
 function
-BFGraphSearch(g: Graph): string [] {
+BFGraphSearch(g: Graph): any [] {
 
-  var q = new Queue();
+  var q = new Sequence();
   q.enq(g.startState());
   var visited = { };
   
@@ -142,112 +138,240 @@ BFGraphSearch(g: Graph): string [] {
 
 
 function
-dfs(g: Graph, n) {
+dfs(g: Graph, maxDepth, stack: Sequence): any {
 
-  var stack = [ g.startState() ];
-
+  stack.setMaxSize(maxDepth);
+  stack.push(g.startState());
+  var visited = { }
+  
   do {
     var node = stack.pop();
     if (g.isGoalState(node))
-      return node
+      return node;
 
     var neighbors = g.neighbors(node);
-    for (var i = neighbors.length - 1; i > -1; --i)
-      stack.push(neighbors[i]);
+    neighbors.sort();
+    for (var i = neighbors.length - 1; i > -1; --i) {
+      var nbr = neighbors[i];
+      if (visited[nbr] == undefined) {
+        stack.push(nbr);
+	visited[nbr] = true;
+	}
+      }
     }
-  while ((0 < stack.length) && (stack.length <= n));
+  while ((0 < stack.size()) && (stack.size() <= maxDepth));
 
   return undefined;
   }
 
 
 function
-DFSGraphSearch(g: Graph): void {
+DFSGraphSearch(g: Graph): any [] {
 
-  if (dfs(g, 100) == undefined)
+  var stack = new Sequence();
+  
+  if (dfs(g, 100, stack) == undefined)
     alert("graph dfs didn't find a goal state")    
+
+  return stack.log();
   }
 
 
 function
-IDGraphSearch(g: Graph): void {
+IDGraphSearch(g: Graph): any [] {
 
+  var stack = new Sequence();
+  
   for (var i = 1; i < 100; ++i)
-    if (dfs(g, i) != undefined)
-      return;
-    
+    if (dfs(g, i, stack) != undefined)
+      return stack.log();
+    else
+      stack.clear()
+      
   alert("graph iterated deepening didn't find a goal state")    
   }
 
 
 function
-LCFSGraphSearch(g: Graph): void {
+LCFGraphSearch(g: Graph): any [] {
 
-  var queue = [ [ g.startState(), 0 ] ];
+  var newSI = function (n: string, p: number): SequenceItem {
+    return new SequenceItem({
+        name: n
+      , priority: p
+      , pRep: n + ':' + p
+      });
+    }
+
+  var pq = new MultiPathPrunedSequence(
+    function(a: SequenceItem, b: SequenceItem): boolean {
+      return a.priority() < b.priority();
+      });
+
+  pq.enq(newSI(g.startState(), 0));
 
   do {
-    var node = queue.shift();
-    if (g.isGoalState(node[0]))
-      return;
+    var node = pq.deq();
+    if (g.isGoalState(node.name()))
+      return pq.log();
 
-    var neighbors = g.neighbors(node[0]);
+    var neighbors = g.neighbors(node.name());
     for (var i = neighbors.length - 1; i > -1; --i) {
       var n = neighbors[i]
-      queue.push([n, node[1] + g.edgeCost(node[0], n)]);
+      pq.enq(newSI(n, node.priority() + g.edgeCost(node.name(), n)));
       }
-    queue.sort(function (a, b) { return a[1] - b[2]; });
     }
-  while (queue.length > 0);
+  while (pq.size() > 0);
 
   alert("graph lowest-cost first search didn't find a goal state")
   }
 
 
-function
-BestFSGraphSearch(g: Graph): void {
+// function
+// LCFSGraphSearch(g: Graph): any [] {
 
-  var queue = [ [ g.startState(), 0 ] ];
+//   var queue = [ [ g.startState(), 0 ] ];
+//   var log = [ ];
+//   log.push(['enq', g.startState() + ':' + 0]);
+  
+//   do {
+//     var node = queue.shift();
+//     log.push(['deq']);
+//     if (g.isGoalState(node[0]))
+//       return log;
+
+//     var neighbors = g.neighbors(node[0]);
+//     for (var i = neighbors.length - 1; i > -1; --i) {
+//       var n = neighbors[i]
+//       queue.push([n, node[1] + g.edgeCost(node[0], n)]);
+//       }
+//     queue.sort(function (a, b) { return a[1] - b[2]; });
+//     }
+//   while (queue.length > 0);
+
+//   alert("graph lowest-cost first search didn't find a goal state")
+//   }
+
+
+// function
+// BestFSGraphSearch(g: Graph): void {
+
+//   var queue = [ [ g.startState(), 0 ] ];
+
+//   do {
+//     var node = queue.shift();
+//     if (g.isGoalState(node[0]))
+//       return;
+
+//     var neighbors = g.neighbors(node[0]);
+//     for (var i = neighbors.length - 1; i > -1; --i) {
+//       var n = neighbors[i]
+//       queue.push([n, g.edgeCost(node[0], n)]);
+//       }
+//     queue.sort(function (a, b) { return a[1] - b[2]; });
+//     }
+//   while (queue.length > 0);
+
+//   alert("graph best first search didn't find a goal state")
+//   }
+
+
+function
+BestFSGraphSearch(g: Graph): any [] {
+
+  var newSI = function (n: string, p: number): SequenceItem {
+    return new SequenceItem({
+        name: n
+      , priority: p
+      , pRep: n + ':' + p
+      });
+    }
+
+  var pq = new MultiPathPrunedSequence(
+    function(a: SequenceItem, b: SequenceItem): boolean {
+      return a.priority() < b.priority();
+      });
+
+  pq.enq(newSI(g.startState(), 0));
 
   do {
-    var node = queue.shift();
-    if (g.isGoalState(node[0]))
-      return;
+    var node = pq.deq();
+    if (g.isGoalState(node.name()))
+      return pq.log();
 
-    var neighbors = g.neighbors(node[0]);
+    var neighbors = g.neighbors(node.name());
     for (var i = neighbors.length - 1; i > -1; --i) {
       var n = neighbors[i]
-      queue.push([n, g.edgeCost(node[0], n)]);
+      pq.enq(newSI(n, g.edgeCost(node.name(), n)));
       }
-    queue.sort(function (a, b) { return a[1] - b[2]; });
     }
-  while (queue.length > 0);
+  while (pq.size() > 0);
 
   alert("graph best first search didn't find a goal state")
   }
 
 
 function
-ASGraphSearch(g: Graph): void {
+ASGraphSearch(g: Graph): any [] {
 
-  var ss = g.startState()
-  var queue = [ [ ss, 0, g.nodeCost(ss) ] ];
+  var newSI = function (n: string, pathC: number): SequenceItem {
+
+    var nc = g.nodeCost(n);
+
+    return new SequenceItem({
+        name: n
+      , priority: nc + pathC
+      , pRep: n + ':' + pathC + '+' + nc
+      , pathCost: pathC
+      });
+    }
+
+  var pq = new MultiPathPrunedSequence(
+    function(a: SequenceItem, b: SequenceItem): boolean {
+      return a.priority() < b.priority();
+      });
+
+  pq.enq(newSI(g.startState(), 0));
 
   do {
-    var node = queue.shift();
-    if (g.isGoalState(node[0]))
-      return;
+    var node = pq.deq();
+    if (g.isGoalState(node.name()))
+      return pq.log();
 
-    var neighbors = g.neighbors(node[0]);
+    var neighbors = g.neighbors(node.name());
     for (var i = neighbors.length - 1; i > -1; --i) {
       var n = neighbors[i]
-      queue.push([n, node[1] + g.edgeCost(node[0], n), g.nodeCost(node[0])]);
+      pq.enq(newSI(n, node.pathCost() + g.edgeCost(node.name(), n)));
       }
-    queue.sort(function (a, b) { return (a[1] + a[2]) - (b[1] + b[2]); });
     }
-  while (queue.length > 0);
+  while (pq.size() > 0);
 
   alert("graph A* search didn't find a goal state")
   }
+
+
+// function
+// ASGraphSearch(g: Graph): void {
+
+//   var ss = g.startState()
+//   var queue = [ [ ss, 0, g.nodeCost(ss) ] ];
+
+//   do {
+//     var node = queue.shift();
+//     if (g.isGoalState(node[0]))
+//       return;
+
+//     var neighbors = g.neighbors(node[0]);
+//     for (var i = neighbors.length - 1; i > -1; --i) {
+//       var n = neighbors[i]
+//       queue.push([n, node[1] + g.edgeCost(node[0], n), g.nodeCost(node[0])]);
+//       }
+//     queue.sort(function (a, b) { return (a[1] + a[2]) - (b[1] + b[2]); });
+//     }
+//   while (queue.length > 0);
+
+//   alert("graph A* search didn't find a goal state")
+//   }
 
 
 class
@@ -265,6 +389,9 @@ AnimateLog {
     this.q = [];
     this.qRep = paper.text(ul.x(), ul.y(), "");
     this.fontSize = Math.round(ht*0.6);
+
+    this.msgFontSize = this.fontSize*0.5;
+    this.msgText = paper.text(ul.x(), ul.y(), "");
     }
 
 
@@ -291,13 +418,45 @@ AnimateLog {
 
 
   step() {
-    if (this.nextStep == 0)
-      this.q = [ ];
 
-    if (this.log[this.nextStep][0] == '-')
+    var step = this.log[this.nextStep];
+    
+    if (this.nextStep == 0)
+      this.q = [];
+
+    if (step[0] == 'clear')
+      this.q = [];
+
+    else if (this.log[this.nextStep][0] == 'deq')
       this.q.shift();
-    else if (this.log[this.nextStep][0] == '+')
+
+    else if (this.log[this.nextStep][0] == 'enq')
       this.q.push(this.log[this.nextStep][1]);
+
+    else if (this.log[this.nextStep][0] == 'msg') {
+      this.msgText.remove();
+      this.msgText = this.paper.text(
+	this.ul.x() + this.wd - 10, this.ul.y(), this.log[this.nextStep][1])
+	.attr({
+	  stroke: foregroundColor
+	, fill: foregroundColor
+	, 'font-size': this.msgFontSize
+	, 'text-anchor': "end"
+        })
+      }
+
+    else if (this.log[this.nextStep][0] == 'pop')
+      this.q.shift();
+
+    else if (this.log[this.nextStep][0] == 'push')
+      this.q.unshift(this.log[this.nextStep][1]);
+
+    else if (step[0] == 'swap') {
+      var t = this.q[step[1]];
+      this.q[step[1]] = this.q[step[2]];
+      this.q[step[2]] = t;
+      }
+
     else
       throw new Error('unrecognized operator in log');
       
@@ -319,28 +478,35 @@ AnimateLog {
   private q: string [ ];
   private qRep;
   private fontSize;
+
+  private msgText;
+  private msgFontSize;
   }
 
 
 class
-Queue {
+Sequence {
 
+
+  clear() {
+    this.script.push(['clear']);
+    this.seq = [];
+    }
 
   deq() {
-    var e = this.q.shift()
-    this.script.push(['-']);
-    return e;
+    this.script.push(['deq']);
+    return this.seq.shift();
     }
 
 
   empty(): boolean {
-    return this.q.length == 0;
+    return this.seq.length == 0;
     }
 
 
   enq(n) {
-    this.q.push(n);
-    this.script.push(['+', n]);
+    this.script.push(['enq', n]);
+    this.seq.push(n);
     }
 
 
@@ -349,80 +515,203 @@ Queue {
     }
 
 
-  private q = [ ];
+  pop(): any {
+    this.script.push(['pop']);
+    return this.seq.pop();
+    }
+
+
+  push(e) {
+    this.script.push(['push', e]);
+    this.seq.push(e);
+    }
+
+
+  setMaxSize(n) {
+    if (n != undefined)
+      this.script.push(['msg', 'Maximum size = ' + n]);
+    else
+      this.script.push(['msg', '']);
+      
+    this.maxSize = n;
+    }
+
+
+  size(): number {
+    return this.seq.length;
+    }
+
+
+  private seq = [];
   private script = [];
+  private maxSize;
   }
 
 
 class
-QueuePicture {
+NewSequence {
 
 
-  constructor(paper, ht, wd, ul: Coordinate) {
-    drawLine(paper, ul.x(), ul.y(), ul.x() + wd, ul.y());  
-    drawLine(paper, ul.x(), ul.y(), ul.x(), ul.y() + ht);  
-    drawLine(paper, ul.x(), ul.y() + ht, ul.x() + wd, ul.y() + ht);  
+  clear() {
+    this.script.push(['clear']);
+    this.seq = [];
+    }
 
-    this.fontSize = ht*0.8;
-    this.ul = ul;
-    this.ht = ht;
-    this.wd = wd;
-    this.paper = paper;
-    this.script = [ ];
+
+  constructor(less: (a: SequenceItem, b: SequenceItem) => boolean) {
+    this.less = less;
     }
 
 
   deq() {
-    var e = this.q.shift()
-    this.script.push('-');
-    return e;
+    this.script.push(['deq']);
+    return this.seq.shift();
+    }
+
+
+  empty(): boolean {
+    return this.seq.length == 0;
+    }
+
+
+  enq(n: SequenceItem) {
+    this.script.push(['enq', n.pRep() || n.name()]);
+    this.seq.push(n);
+    if (this.less != undefined)
+      this.reorder();
+    }
+
+
+  log(): string [] {
+    return this.script;
+    }
+
+
+  pop(): SequenceItem {
+    this.script.push(['pop']);
+    return this.seq.pop();
+    }
+
+
+  push(e: SequenceItem) {
+    this.script.push(['push', e.pRep() || e.name()]);
+    this.seq.push(e);
     }
 
 
   private
-  drawQ() {
+  reorder() {
 
-    for (var e in this.qElements)
-      this.qElements[e].remove();
-      
-    var x = this.ul.x();
-    var y = this.ul.y() + this.ht;
-    var trail = ""
+    var n = this.seq.length;
+    var i;
     
-    for (var i = 0; i < this.q.length; ++i) {
-      var e = this.q[i];
-      var p = this.paper.text(x, y, e).attr({
-          'font-size': this.fontSize
-        , stroke: foregroundColor
-        , fill: foregroundColor
-        });
-      var bb = p.getBBox();
+    for (i = n - 1; i > 0; --i)
+      if  (!this.less(this.seq[i - 1], this.seq[i]))
+        if (   this.less(this.seq[i], this.seq[i - 1])
+	    || (this.seq[i - 1].name() > this.seq[i].name())) {
+	  console.log(
+	    'swap ' + this.seq[i - 1].pRep() + ' and ' + this.seq[i].pRep());
+	  var t = this.seq[i];
+	  this.seq[i] = this.seq[i - 1];
+	  this.seq[i - 1] = t;
+	  this.script.push(['swap', i - 1, i]);
+	  }
+    }
 
-      trail = trail + " " + e;
-      x = x + bb.width + 5;
-      this.qElements[e] = p;
+
+  setMaxSize(n) {
+    if (n != undefined)
+      this.script.push(['msg', 'Maximum size = ' + n]);
+    else
+      this.script.push(['msg', '']);
+      
+    this.maxSize = n;
+    }
+
+
+  size(): number {
+    return this.seq.length;
+    }
+
+
+  private seq: SequenceItem [] = [];
+  private script = [];
+  private maxSize;
+  private less;
+  }
+
+
+class
+MultiPathPrunedSequence
+extends NewSequence {
+
+
+  clear() {
+    super.clear();
+    this.visited = { };
+    }
+
+
+  constructor(less: (a: SequenceItem, b: SequenceItem) => boolean) {
+    super(less);
+    this.visited = { }
+    }
+
+
+  enq(si: SequenceItem) {
+    if (!this.visited[si.name()]) {
+      super.enq(si);
+      this.visited[si.name()] = true;
       }
-
-    console.log('Q:' + trail);
-    }
-
-  empty(): boolean {
-    return this.q.length == 0;
     }
 
 
-  enq(n) {
-    this.q.push(n);
-    this.script['+ ' + n];
+  push(si: SequenceItem) {
+    if (!this.visited[si.name()]) {
+      super.push(si);
+      this.visited[si.name()] = true;
+      }
     }
 
 
-  private q = [ ];
-  private qElements = { };
-  private fontSize;
-  private ul;
-  private ht;
-  private wd;
-  private paper;
-  private script;
+  private visited;
+  }
+
+
+class
+SequenceItem {
+
+  constructor(arg) {
+    if (typeof arg == "string")
+      this._name = arg;
+    else if (typeof arg == "object") {
+      if (arg.name == "undefined")
+        throw new Error("constructing a sequence item with no name");
+      this._name = arg.name;
+      this._pRep = arg.pRep;
+      this._priority = arg.priority;
+      this._pathCost = arg.pathCost;
+      }
+    }
+
+  name(): string {
+    return this._name;
+    }
+    
+  pRep(): string {
+    return this._pRep;
+    }
+
+  pathCost(): number {
+    return this._pathCost;
+    }
+    
+  priority(): number {
+    return this._priority;
+    }
+    
+  private _pRep;
+  private _name;
+  private _priority;
+  private _pathCost;
   }
