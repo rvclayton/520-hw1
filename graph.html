@@ -46,7 +46,9 @@
          var log = BFGraphSearch(g);
          var logAnimator = new AnimateLog(
            paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
+         drawGraph(
+           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+           { noEdgeWeights: true, noCostHeuristics: true });
          })("graphBFS", 400, 500);
     </script>
 
@@ -60,7 +62,9 @@
          var log = DFSGraphSearch(g);
          var logAnimator = new AnimateLog(
            paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
+         drawGraph(
+           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+           { noEdgeWeights: true, noCostHeuristics: true });
          })("graphDFS", 400, 500);
     </script>
 
@@ -74,7 +78,9 @@
          var log = IDGraphSearch(g);
          var logAnimator = new AnimateLog(
            paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
+         drawGraph(
+           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+           { noEdgeWeights: true, noCostHeuristics: true });
          })("graphID", 400, 500);
     </script>
 
@@ -88,7 +94,9 @@
          var log = LCFGraphSearch(g);
          var logAnimator = new AnimateLog(
            paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
+         drawGraph(
+           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+           { noCostHeuristics: true });
          })("graphLCFS", 400, 500);
     </script>
 
@@ -102,7 +110,9 @@
          var log = BestFSGraphSearch(g);
          var logAnimator = new AnimateLog(
            paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
+         drawGraph(
+           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+           { noCostHeuristics: true });
          })("graphBestFS", 400, 500);
     </script>
 
