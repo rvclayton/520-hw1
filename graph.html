@@ -18,12 +18,12 @@
 
   <body style = "background: #000">
 
+    <script src = "raphael-min.js"></script>
+    <script src = "hw1solutions.js"></script>
+<!--
     <p>The problem graph!</p>
     <div id = "hw1graph"></div>
     
-    <script src = "raphael-min.js"></script>
-    <script src = "hw1solutions.js"></script>
-
     <script>
       var g = makeGraph();
       var qht = 50;
@@ -34,7 +34,7 @@
          drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
          })("hw1graph", 400, 500);
     </script>
-
+-->
     <p>Graph Breadth-FS!</p>
     <div id = "graphBFS"></div>
     
@@ -45,9 +45,9 @@
          var paper = Raphael(document.getElementById(divID), wd, ht);
          var log = BFGraphSearch(g);
          var logAnimator = new AnimateLog(
-           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+           paper, qht, wd, new Coordinate(0, 0), g, log);
          drawGraph(
-           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+           g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
            { noEdgeWeights: true, noCostHeuristics: true });
          })("graphBFS", 400, 500);
     </script>
