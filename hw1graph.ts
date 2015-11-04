@@ -36,7 +36,7 @@ drawGraph(
     paper.circle(c.x(), c.y(), nodeRadius)
       .attr({ stroke: foregroundColor, fill: backgroundColor });
     if (options.noCostHeuristics)
-      drawText(c.x(), c.y(), n.name);
+      drawText(c.x(), c.y(), n.name).attr('font-size', nodeFontSize*1.5);
     else {
       drawText(c.x(), c.y() - nodeRadius*0.5, n.name);
       drawText(c.x(), c.y() + nodeRadius*0.5, n.cost.toString());
@@ -45,7 +45,7 @@ drawGraph(
 
 
   var drawText = function (x, y, t) {
-    paper.text(x, y, t)
+    return paper.text(x, y, t)
       .attr({
         'font-size': nodeFontSize
       , stroke: foregroundColor
@@ -64,7 +64,7 @@ drawGraph(
   var nodeRadius = Math.min(ht, wd)*0.075;
   var nodeFontSize = nodeRadius*0.7;
   
-  var clickPad = paper.rect(0, 0, ht, wd)
+  var clickPad = paper.rect(0, 0, wd, ht)
     .attr('fill', backgroundColor)
     .data('logAnimator', logAnimator)
     .click(function (e) {
@@ -358,140 +358,6 @@ ASGraphSearch(g: Graph): any [] {
   }
 
 
-// function
-// ASGraphSearch(g: Graph): void {
-
-//   var ss = g.startState()
-//   var queue = [ [ ss, 0, g.nodeCost(ss) ] ];
-
-//   do {
-//     var node = queue.shift();
-//     if (g.isGoalState(node[0]))
-//       return;
-
-//     var neighbors = g.neighbors(node[0]);
-//     for (var i = neighbors.length - 1; i > -1; --i) {
-//       var n = neighbors[i]
-//       queue.push([n, node[1] + g.edgeCost(node[0], n), g.nodeCost(node[0])]);
-//       }
-//     queue.sort(function (a, b) { return (a[1] + a[2]) - (b[1] + b[2]); });
-//     }
-//   while (queue.length > 0);
-
-//   alert("graph A* search didn't find a goal state")
-//   }
-
-
-class
-AnimateLog {
-
-  constructor(paper, ht, wd, ul: Coordinate, g: Graph, log) {
-    this.paper = paper;
-    this.ht = ht;
-    this.wd = wd;
-    this.ul = new Coordinate(ul.x() + 10, ul.y());
-    this.g = g;
-    this.log = log;
-
-    this.nextStep = 0;
-    this.q = [];
-    this.qRep = paper.text(ul.x(), ul.y(), "");
-    this.fontSize = Math.round(ht*0.6);
-
-    this.msgFontSize = this.fontSize*0.5;
-    this.msgText = paper.text(ul.x(), ul.y(), "");
-    }
-
-
-  private
-  drawQ() {
-
-    var qStr = ""
-    var sep = ""
-
-    for (var i = 0; i < this.q.length; ++i) {
-      qStr = qStr + sep + this.q[i]
-      sep = "  "
-      }
-
-    console.log('draw this: "' + qStr + '" at ' + this.ul.toString() + '.');
-    
-    return this.paper.text(this.ul.x(), this.ul.y(), qStr).attr({
-        stroke: foregroundColor
-      , fill: foregroundColor
-      , 'font-size': this.fontSize
-      , 'text-anchor': "start"
-      });
-    }
-
-
-  step() {
-
-    var step = this.log[this.nextStep];
-    
-    if (this.nextStep == 0)
-      this.q = [];
-
-    if (step[0] == 'clear')
-      this.q = [];
-
-    else if (this.log[this.nextStep][0] == 'deq')
-      this.q.shift();
-
-    else if (this.log[this.nextStep][0] == 'enq')
-      this.q.push(this.log[this.nextStep][1]);
-
-    else if (this.log[this.nextStep][0] == 'msg') {
-      this.msgText.remove();
-      this.msgText = this.paper.text(
-	this.ul.x() + this.wd - 10, this.ul.y(), this.log[this.nextStep][1])
-	.attr({
-	  stroke: foregroundColor
-	, fill: foregroundColor
-	, 'font-size': this.msgFontSize
-	, 'text-anchor': "end"
-        })
-      }
-
-    else if (this.log[this.nextStep][0] == 'pop')
-      this.q.shift();
-
-    else if (this.log[this.nextStep][0] == 'push')
-      this.q.unshift(this.log[this.nextStep][1]);
-
-    else if (step[0] == 'swap') {
-      var t = this.q[step[1]];
-      this.q[step[1]] = this.q[step[2]];
-      this.q[step[2]] = t;
-      }
-
-    else
-      throw new Error('unrecognized operator in log');
-      
-    this.qRep.remove();
-    this.qRep = this.drawQ();
-
-    this.nextStep = (this.nextStep + 1) % this.log.length;
-    }
-
-
-  private log: any [];
-  private paper;
-  private ht: number;
-  private wd: number;
-  private ul: Coordinate;
-  private g: Graph;
-
-  private nextStep: number;
-  private q: string [ ];
-  private qRep;
-  private fontSize;
-
-  private msgText;
-  private msgFontSize;
-  }
-
-
 class
 Sequence {
 
@@ -722,4 +588,151 @@ SequenceItem {
   private _name;
   private _priority;
   private _pathCost;
+  }
+
+
+class
+AnimateLog {
+
+  // Draw a log animation within a rectangle.
+  
+  constructor(
+      paper		// where to draw the rectangle.
+    , ht		// the rectangle's height
+    , wd		// the rectangle's width.
+    , ul: Coordinate	// The rectangle's upper-left corner.
+    , g: Graph		// The graph involved.
+    , log		// The log to animate.
+    ) {
+
+    this.paper = paper;
+    this.ht = ht;
+    this.wd = wd;
+    this.ul = new Coordinate(ul.x() + 10, ul.y());
+    this.g = g;
+
+    this.nextStep = 0;
+    this.qRep = paper.text(ul.x(), ul.y(), "");
+    this.fontSize = Math.round(ht*0.8);
+    this.history = [ ];
+    
+    this.msgFontSize = this.fontSize*0.5;
+    this.msgText = paper.text(ul.x(), ul.y(), "");
+
+    this.fillHistory(log);
+    }
+
+
+  private
+  drawQ() {
+
+    var q = this.history[this.nextStep];
+    var qStr = ""
+    var sep = ""
+
+    for (var i = 0; i < q.length; ++i) {
+      qStr = qStr + sep + q[i]
+      sep = "  "
+      }
+
+    console.log('draw this: "' + qStr + '" at ' + this.ul.toString() + '.');
+    
+    return this.paper.text(this.ul.x(), this.ul.y() + this.ht*0.5, qStr).attr({
+        stroke: foregroundColor
+      , fill: foregroundColor
+      , 'font-size': this.fontSize
+      , 'text-anchor': "start"
+      });
+    }
+
+
+  private
+  fillHistory(log) {
+
+    var q = [ ];
+    
+    for (var i = 0; i < log.length; ++i) {
+      var step = log[i];
+
+      if (step[0] == 'clear')
+	q = [];
+
+      else if (step[0] == 'deq')
+	q.shift();
+
+      else if (step[0] == 'enq')
+	q.push(step[1]);
+
+      else if (step[0] == 'msg') {
+	this.msgText.remove();
+	this.msgText = this.paper.text(
+	  this.ul.x() + this.wd - 10, this.ul.y(), step[1])
+	  .attr({
+	    stroke: foregroundColor
+	  , fill: foregroundColor
+	  , 'font-size': this.msgFontSize
+	  , 'text-anchor': "end"
+	  })
+	}
+
+      else if (step[0] == 'pop')
+	q.shift();
+
+      else if (step[0] == 'push')
+	q.unshift(step[1]);
+
+      else if (step[0] == 'swap') {
+	var t = q[step[1]];
+	q[step[1]] = q[step[2]];
+	q[step[2]] = t;
+	}
+
+      else
+	throw new Error('unrecognized operator in log: ' + step[0]);
+
+      if (step[0] == 'msg')
+        this.history.push(step[1]);
+      else
+        this.history.push(q.slice());
+      }
+    }
+
+
+  step() {
+
+    var step = history[this.nextStep];
+    
+    if (typeof step == 'string') {
+      this.msgText.remove();
+      this.msgText = this.paper.text(
+	this.ul.x() + this.wd - 10, this.ul.y(), step)
+	.attr({
+	  stroke: foregroundColor
+	, fill: foregroundColor
+	, 'font-size': this.msgFontSize
+	, 'text-anchor': "end"
+        })
+      }
+    else {
+      this.qRep.remove();
+      this.qRep = this.drawQ();
+      }
+      
+    this.nextStep = (this.nextStep + 1) % this.history.length;
+    }
+
+
+  private paper;
+  private ht: number;
+  private wd: number;
+  private ul: Coordinate;
+  private g: Graph;
+
+  private nextStep: number; 
+  private history: string [] [];
+  private qRep;
+  private fontSize;
+
+  private msgText;
+  private msgFontSize;
   }
