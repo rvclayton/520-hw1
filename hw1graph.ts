@@ -8,7 +8,14 @@ var foregroundColor = 'white';
 
 function
 drawGraph(
-  g: Graph, paper, ht, wd, ul: Coordinate, logAnimator: AnimateLog, options): void {
+  g: Graph
+  , paper
+  , ht
+  , wd
+  , ul: Coordinate
+  , logAnimator: AnimateLog
+  , options
+  ): void {
 
 
   var drawEdge = function (e): void {
@@ -64,7 +71,7 @@ drawGraph(
   var nodeRadius = Math.min(ht, wd)*0.075;
   var nodeFontSize = nodeRadius*0.7;
   
-  var clickPad = paper.rect(0, 0, wd, ht)
+    var clickPad = paper.rect(ul.x(), ul.y(), wd, ht)
     .attr('fill', backgroundColor)
     .data('logAnimator', logAnimator)
     .click(function (e) {
@@ -483,8 +490,6 @@ NewSequence {
       if  (!this.less(this.seq[i - 1], this.seq[i]))
         if (   this.less(this.seq[i], this.seq[i - 1])
 	    || (this.seq[i - 1].name() > this.seq[i].name())) {
-	  console.log(
-	    'swap ' + this.seq[i - 1].pRep() + ' and ' + this.seq[i].pRep());
 	  var t = this.seq[i];
 	  this.seq[i] = this.seq[i - 1];
 	  this.seq[i - 1] = t;
@@ -519,6 +524,8 @@ class
 MultiPathPrunedSequence
 extends NewSequence {
 
+  // This class is incorrect because it always prunes the new path in
+  // favor of the old path, which may not be the correct thing to do.
 
   clear() {
     super.clear();
@@ -533,21 +540,28 @@ extends NewSequence {
 
 
   enq(si: SequenceItem) {
-    if (!this.visited[si.name()]) {
+    if (this.unvisited(si.name()))
       super.enq(si);
-      this.visited[si.name()] = true;
-      }
     }
 
 
   push(si: SequenceItem) {
-    if (!this.visited[si.name()]) {
+    if (this.unvisited(si.name()))
       super.push(si);
-      this.visited[si.name()] = true;
-      }
     }
 
 
+  private
+  unvisited(name: string): boolean {
+
+    if (this.visited[name])
+      return true;
+    
+    this.visited[name] = true;
+    return false;
+    }
+
+    
   private visited;
   }
 
@@ -608,75 +622,83 @@ AnimateLog {
     this.paper = paper;
     this.ht = ht;
     this.wd = wd;
-    this.ul = new Coordinate(ul.x() + 10, ul.y());
     this.g = g;
 
     this.nextStep = 0;
-    this.qRep = paper.text(ul.x(), ul.y(), "");
+    
     this.fontSize = Math.round(ht*0.8);
-    this.history = [ ];
-    
-    this.msgFontSize = this.fontSize*0.5;
-    this.msgText = paper.text(ul.x(), ul.y(), "");
+    this.msgFontSize = Math.round(this.fontSize*0.5);
 
-    this.fillHistory(log);
-    }
-
-
-  private
-  drawQ() {
-
-    var q = this.history[this.nextStep];
-    var qStr = ""
-    var sep = ""
-
-    for (var i = 0; i < q.length; ++i) {
-      qStr = qStr + sep + q[i]
-      sep = "  "
-      }
-
-    console.log('draw this: "' + qStr + '" at ' + this.ul.toString() + '.');
-    
-    return this.paper.text(this.ul.x(), this.ul.y() + this.ht*0.5, qStr).attr({
+    this.qRep = paper.text(ul.x() + 20, ul.y() + ht*0.5, "hello").attr({
         stroke: foregroundColor
       , fill: foregroundColor
       , 'font-size': this.fontSize
       , 'text-anchor': "start"
       });
+    this.poppedRep = paper.text(ul.x(), ul.y() + ht*0.5, "").attr({
+        stroke: foregroundColor
+      , fill: foregroundColor
+      , 'font-size': this.fontSize
+      , 'text-anchor': "start"
+      });
+    this.msgRep = this.paper.text(ul.x() + this.wd - 10, ul.y(), "")
+      .attr({
+	stroke: foregroundColor
+      , fill: foregroundColor
+      , 'font-size': this.msgFontSize
+      , 'text-anchor': "end"
+      })
+    this.history = this.fillHistory(log);
     }
 
 
   private
-  fillHistory(log) {
+  drawQ(step) {
 
-    var q = [ ];
+    var qStr = ""
+    var sep = ""
+
+    for (var i = 0; i < step.q.length; ++i) {
+      qStr = qStr + sep + step.q[i]
+      sep = "  "
+      }
+
+    this.qRep.attr({ text: qStr });
+    this.poppedRep.attr({ text: step.lastPopped });
+    this.msgRep.attr({ text: step.msg });
+
+    console.log('drew "' + this.qRep.attr('text') + '".');
+    }
+
+
+  private
+  fillHistory(log): any [] {
+
+    var q = [];
+    var lastPopped = "";
+    var msg = "";
+    var history = [];
     
     for (var i = 0; i < log.length; ++i) {
       var step = log[i];
 
-      if (step[0] == 'clear')
+      if (step[0] == 'clear') {
 	q = [];
+	lastPopped = "";
+	msg = "";
+        }
 
       else if (step[0] == 'deq')
-	q.shift();
+	lastPopped = q.shift();
 
       else if (step[0] == 'enq')
 	q.push(step[1]);
 
-      else if (step[0] == 'msg') {
-	this.msgText.remove();
-	this.msgText = this.paper.text(
-	  this.ul.x() + this.wd - 10, this.ul.y(), step[1])
-	  .attr({
-	    stroke: foregroundColor
-	  , fill: foregroundColor
-	  , 'font-size': this.msgFontSize
-	  , 'text-anchor': "end"
-	  })
-	}
+      else if (step[0] == 'msg')
+	msg = step[1];
 
       else if (step[0] == 'pop')
-	q.shift();
+	lastPopped = q.shift();
 
       else if (step[0] == 'push')
 	q.unshift(step[1]);
@@ -690,34 +712,19 @@ AnimateLog {
       else
 	throw new Error('unrecognized operator in log: ' + step[0]);
 
-      if (step[0] == 'msg')
-        this.history.push(step[1]);
-      else
-        this.history.push(q.slice());
+      history.push({
+	  q: q.slice()
+	, lastPopped: lastPopped
+        , msg: msg
+        });
       }
+
+    return history;
     }
 
 
   step() {
-
-    var step = history[this.nextStep];
-    
-    if (typeof step == 'string') {
-      this.msgText.remove();
-      this.msgText = this.paper.text(
-	this.ul.x() + this.wd - 10, this.ul.y(), step)
-	.attr({
-	  stroke: foregroundColor
-	, fill: foregroundColor
-	, 'font-size': this.msgFontSize
-	, 'text-anchor': "end"
-        })
-      }
-    else {
-      this.qRep.remove();
-      this.qRep = this.drawQ();
-      }
-      
+    this.drawQ(this.history[this.nextStep]);
     this.nextStep = (this.nextStep + 1) % this.history.length;
     }
 
@@ -725,14 +732,16 @@ AnimateLog {
   private paper;
   private ht: number;
   private wd: number;
-  private ul: Coordinate;
   private g: Graph;
 
   private nextStep: number; 
-  private history: string [] [];
-  private qRep;
-  private fontSize;
+  private history: any [];
 
-  private msgText;
+  private fontSize;
   private msgFontSize;
+
+  private qRep;
+  private poppedRep;
+  private msgRep;
+  
   }
