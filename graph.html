@@ -20,116 +20,132 @@
 
     <script src = "raphael-min.js"></script>
     <script src = "hw1solutions.js"></script>
-<!--
-    <p>The problem graph!</p>
-    <div id = "hw1graph"></div>
-    
-    <script>
-      var g = makeGraph();
-      var qht = 50;
 
-      (function (divID, ht, wd) {
-         var g = makeGraph();
-         var paper = Raphael(document.getElementById(divID), wd, ht);
-         drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
-         })("hw1graph", 400, 500);
-    </script>
--->
+    <div style = "display: none">
+      <p>The problem graph!</p>
+      <div id = "hw1graph"></div>
+
+      <script>
+	var g = makeGraph();
+	var qht = 50;
+<!--
+	(function (divID, ht, wd) {
+	   var g = makeGraph();
+	   var paper = Raphael(document.getElementById(divID), wd, ht);
+	   drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
+	   })("hw1graph", 400, 500);
+ -->
+      </script>
+    </div>
+
     <p>Graph Breadth-FS!</p>
     <div id = "graphBFS"></div>
     
-    <script>
-      (function (divID, ht, wd) {
-         var g = makeGraph();
-         var qht = 50;
-         var paper = Raphael(document.getElementById(divID), wd, ht);
-         var log = BFGraphSearch(g);
-         var logAnimator = new AnimateLog(
-           paper, qht, wd, new Coordinate(0, 0), g, log);
-         drawGraph(
-           g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
-           { noEdgeWeights: true, noCostHeuristics: true });
-         })("graphBFS", 400, 500);
-    </script>
+    <div style = "display: initial">
+      <script>
+	(function (divID, ht, wd) {
+	   var g = makeGraph();
+	   var qht = 50;
+	   var paper = Raphael(document.getElementById(divID), wd, ht);
+	   var log = BFGraphSearch(g);
+	   var logAnimator = new AnimateLog(
+	     paper, qht, wd, new Coordinate(0, 0), g, log);
+	   drawGraph(
+	     g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
+	     { noEdgeWeights: true, noCostHeuristics: true });
+	   })("graphBFS", 400, 500);
+      </script>
+    </div>
+<!--     
+    <div style = "display: initial">
+      <p>Graph DFS!</p>
+      <div id = "graphDFS"></div>
 
-    <p>Graph DFS!</p>
-    <div id = "graphDFS"></div>
+      <script>
+	(function (divID, ht, wd) {
+	   var g = makeGraph();
+	   var paper = Raphael(document.getElementById(divID), wd, ht);
+	   var log = DFSGraphSearch(g);
+	   var logAnimator = new AnimateLog(
+	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	   drawGraph(
+	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     { noEdgeWeights: true, noCostHeuristics: true });
+	   })("graphDFS", 400, 500);
+      </script>
+    </div>
+
+    <div style = "display: initial">
+      <p>Graph iterated deepening search!</p>
+      <div id = "graphID"></div>
+
+      <script>
+	(function (divID, ht, wd) {
+	   var g = makeGraph();
+	   var paper = Raphael(document.getElementById(divID), wd, ht);
+	   var log = IDGraphSearch(g);
+	   var logAnimator = new AnimateLog(
+	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	   drawGraph(
+	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     { noEdgeWeights: true, noCostHeuristics: true });
+	   })("graphID", 400, 500);
+      </script>
+    </div>
     
-    <script>
-      (function (divID, ht, wd) {
-         var g = makeGraph();
-         var paper = Raphael(document.getElementById(divID), wd, ht);
-         var log = DFSGraphSearch(g);
-         var logAnimator = new AnimateLog(
-           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(
-           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
-           { noEdgeWeights: true, noCostHeuristics: true });
-         })("graphDFS", 400, 500);
-    </script>
+    <div style = "display: initial">
+      <p>Graph LCFS!</p>
+      <div id = "graphLCFS"></div>
 
-    <p>Graph iterated deepening search!</p>
-    <div id = "graphID"></div>
+      <script>
+	(function (divID, ht, wd) {
+	   var g = makeGraph();
+	   var paper = Raphael(document.getElementById(divID), wd, ht);
+	   var log = LCFGraphSearch(g);
+	   var logAnimator = new AnimateLog(
+	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	   drawGraph(
+	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     { noCostHeuristics: true });
+	   })("graphLCFS", 400, 500);
+      </script>
+    </div>
+
+    <div style = "display: initial">
+      <p>Graph Best-FS!</p>
+      <div id = "graphBestFS"></div>
+
+      <script>
+	(function (divID, ht, wd) {
+	   var g = makeGraph();
+	   var paper = Raphael(document.getElementById(divID), wd, ht);
+	   var log = BestFSGraphSearch(g);
+	   var logAnimator = new AnimateLog(
+	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	   drawGraph(
+	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     { noCostHeuristics: true });
+	   })("graphBestFS", 400, 500);
+      </script>
+    </div>
+
+    <div style = "display: initial">
+      <p>Graph ASS!</p>
+      <div id = "graphASS"></div>
+
+      <script>
+	(function (divID, ht, wd) {
+	   var g = makeGraph();
+	   var paper = Raphael(document.getElementById(divID), wd, ht);
+	   var log = ASGraphSearch(g);
+	   var logAnimator = new AnimateLog(
+	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	   drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
+	   })("graphASS", 400, 500);
+      </script>
+-->
+    </div>
     
-    <script>
-      (function (divID, ht, wd) {
-         var g = makeGraph();
-         var paper = Raphael(document.getElementById(divID), wd, ht);
-         var log = IDGraphSearch(g);
-         var logAnimator = new AnimateLog(
-           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(
-           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
-           { noEdgeWeights: true, noCostHeuristics: true });
-         })("graphID", 400, 500);
-    </script>
-
-    <p>Graph LCFS!</p>
-    <div id = "graphLCFS"></div>
-    
-    <script>
-      (function (divID, ht, wd) {
-         var g = makeGraph();
-         var paper = Raphael(document.getElementById(divID), wd, ht);
-         var log = LCFGraphSearch(g);
-         var logAnimator = new AnimateLog(
-           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(
-           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
-           { noCostHeuristics: true });
-         })("graphLCFS", 400, 500);
-    </script>
-
-    <p>Graph Best-FS!</p>
-    <div id = "graphBestFS"></div>
-    
-    <script>
-      (function (divID, ht, wd) {
-         var g = makeGraph();
-         var paper = Raphael(document.getElementById(divID), wd, ht);
-         var log = BestFSGraphSearch(g);
-         var logAnimator = new AnimateLog(
-           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(
-           g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
-           { noCostHeuristics: true });
-         })("graphBestFS", 400, 500);
-    </script>
-
-    <p>Graph ASS!</p>
-    <div id = "graphASS"></div>
-    
-    <script>
-      (function (divID, ht, wd) {
-         var g = makeGraph();
-         var paper = Raphael(document.getElementById(divID), wd, ht);
-         var log = ASGraphSearch(g);
-         var logAnimator = new AnimateLog(
-           paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-         drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
-         })("graphASS", 400, 500);
-    </script>
-
   </body>
 
 </html>
