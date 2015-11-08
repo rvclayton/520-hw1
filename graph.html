@@ -21,24 +21,24 @@
     <script src = "raphael-min.js"></script>
     <script src = "hw1solutions.js"></script>
 
-    <div style = "display: none">
+    <div style = "display: initial">
       <p>The problem graph!</p>
       <div id = "hw1graph"></div>
 
       <script>
 	var g = makeGraph();
 	var qht = 50;
-<!--
+	var ht = 400;
+	var wd = 500;
 	(function (divID, ht, wd) {
 	   var g = makeGraph();
 	   var paper = Raphael(document.getElementById(divID), wd, ht);
-	   drawGraph(g, paper, ht, wd, new Coordinate(0, 0));
-	   })("hw1graph", 400, 500);
- -->
+	   drawGraph(g, paper, ht, wd, new Coordinate(0, 0), []);
+	   })("hw1graph", ht, wd);
       </script>
     </div>
 
-    <p>Graph Breadth-FS!</p>
+    <p>Breadth-FS!</p>
     <div id = "graphBFS"></div>
     
     <div style = "display: initial">
@@ -53,25 +53,25 @@
 	   drawGraph(
 	     g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
 	     { noEdgeWeights: true, noCostHeuristics: true });
-	   })("graphBFS", 400, 500);
+	   })("graphBFS", ht, wd);
       </script>
     </div>
-<!--     
+
     <div style = "display: initial">
-      <p>Graph DFS!</p>
+      <p>DFS!</p>
       <div id = "graphDFS"></div>
 
       <script>
 	(function (divID, ht, wd) {
 	   var g = makeGraph();
 	   var paper = Raphael(document.getElementById(divID), wd, ht);
-	   var log = DFSGraphSearch(g);
+	   var log = DFGraphSearch(g);
 	   var logAnimator = new AnimateLog(
-	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	     paper, qht, wd, new Coordinate(0, 0), g, log);
 	   drawGraph(
-	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
 	     { noEdgeWeights: true, noCostHeuristics: true });
-	   })("graphDFS", 400, 500);
+	   })("graphDFS", ht, wd);
       </script>
     </div>
 
@@ -85,14 +85,14 @@
 	   var paper = Raphael(document.getElementById(divID), wd, ht);
 	   var log = IDGraphSearch(g);
 	   var logAnimator = new AnimateLog(
-	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	     paper, qht, wd, new Coordinate(0, 0), g, log);
 	   drawGraph(
-	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
 	     { noEdgeWeights: true, noCostHeuristics: true });
-	   })("graphID", 400, 500);
+	   })("graphID", ht, wd);
       </script>
     </div>
-    
+
     <div style = "display: initial">
       <p>Graph LCFS!</p>
       <div id = "graphLCFS"></div>
@@ -103,9 +103,9 @@
 	   var paper = Raphael(document.getElementById(divID), wd, ht);
 	   var log = LCFGraphSearch(g);
 	   var logAnimator = new AnimateLog(
-	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	     paper, qht, wd, new Coordinate(0, 0), g, log);
 	   drawGraph(
-	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
 	     { noCostHeuristics: true });
 	   })("graphLCFS", 400, 500);
       </script>
@@ -119,11 +119,11 @@
 	(function (divID, ht, wd) {
 	   var g = makeGraph();
 	   var paper = Raphael(document.getElementById(divID), wd, ht);
-	   var log = BestFSGraphSearch(g);
+	   var log = BestFGraphSearch(g);
 	   var logAnimator = new AnimateLog(
-	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
+	     paper, qht, wd, new Coordinate(0, 0), g, log);
 	   drawGraph(
-	     g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator,
+	     g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator,
 	     { noCostHeuristics: true });
 	   })("graphBestFS", 400, 500);
       </script>
@@ -139,13 +139,13 @@
 	   var paper = Raphael(document.getElementById(divID), wd, ht);
 	   var log = ASGraphSearch(g);
 	   var logAnimator = new AnimateLog(
-	     paper, qht, wd, new Coordinate(0, ht - qht), g, log);
-	   drawGraph(g, paper, ht - qht, wd, new Coordinate(0, 0), logAnimator);
+	     paper, qht, wd, new Coordinate(0, 0), g, log);
+	   drawGraph(
+	     g, paper, ht - qht, wd, new Coordinate(0, qht), logAnimator);
 	   })("graphASS", 400, 500);
       </script>
--->
     </div>
-    
+
   </body>
 
 </html>
