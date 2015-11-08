@@ -7,6 +7,148 @@ var foregroundColor = 'white';
   
 
 function
+ASGraphSearch(g: Graph): any [] {
+
+  var newSI = function (n: string, pathC: number): SequenceItem {
+
+    var nc = g.nodeCost(n);
+
+    return new SequenceItem({
+        name: n
+      , priority: nc + pathC
+      , pRep: n + ':' + pathC + '+' + nc
+      , pathCost: pathC
+      });
+    }
+
+  var pq = new MultiPathPrunedSequence(
+    function(a: SequenceItem, b: SequenceItem): boolean {
+      return a.priority() < b.priority();
+      });
+
+  pq.enq(newSI(g.startState(), 0));
+
+  do {
+    var node = pq.deq();
+    if (g.isGoalState(node.name()))
+      return pq.log();
+
+    var neighbors = g.neighbors(node.name());
+    for (var i = neighbors.length - 1; i > -1; --i) {
+      var n = neighbors[i]
+      pq.enq(newSI(n, node.pathCost() + g.edgeCost(node.name(), n)));
+      }
+    }
+  while (pq.size() > 0);
+
+  alert("graph A* search didn't find a goal state")
+  }
+
+
+function
+BestFGraphSearch(g: Graph): any [] {
+
+  var newSI = function (n: string, p: number): SequenceItem {
+    return new SequenceItem({
+        name: n
+      , priority: p
+      , pRep: n + ':' + p
+      });
+    }
+
+  var pq = new MultiPathPrunedSequence(
+    function(a: SequenceItem, b: SequenceItem): boolean {
+      return a.priority() < b.priority();
+      });
+
+  pq.enq(newSI(g.startState(), 0));
+
+  do {
+    var node = pq.deq();
+    if (g.isGoalState(node.name()))
+      return pq.log();
+
+    var neighbors = g.neighbors(node.name());
+    for (var i = neighbors.length - 1; i > -1; --i) {
+      var n = neighbors[i]
+      pq.enq(newSI(n, g.edgeCost(node.name(), n)));
+      }
+    }
+  while (pq.size() > 0);
+
+  alert("graph best first search didn't find a goal state")
+  }
+
+
+function
+BFGraphSearch(g: Graph): any [] {
+
+  var q = new Sequence();
+  q.enq(g.startState());
+  var visited = { };
+  
+  do {
+    var node = q.deq();
+    if (g.isGoalState(node))
+      return q.log();
+
+    var neighbors = g.neighbors(node);
+    neighbors.sort();
+    for (var i = 0; i < neighbors.length; ++i) {
+      var n = neighbors[i];
+      if (!visited[n]) {
+        q.enq(n);
+	visited[n] = true;
+	}
+      }
+    }
+  while (!q.empty());
+
+  alert("graph bfs didn't find a goal state")
+  }
+
+
+function
+dfs(g: Graph, maxDepth, stack: Sequence): any {
+
+  stack.setMaxSize(maxDepth);
+  stack.push(g.startState());
+  var visited = { }
+  
+  do {
+    var node = stack.pop();
+    if (g.isGoalState(node))
+      return node;
+
+    var neighbors = g.neighbors(node);
+    neighbors.sort();
+    for (var i = neighbors.length - 1; i > -1; --i) {
+      var nbr = neighbors[i];
+      if (visited[nbr] == undefined) {
+        stack.push(nbr);
+	visited[nbr] = true;
+	}
+      }
+    }
+  while ((0 < stack.size()) && (stack.size() <= maxDepth));
+
+  return undefined;
+  }
+
+
+function
+DFGraphSearch(g: Graph): any [] {
+
+  var stack = new Sequence();
+  
+  if (dfs(g, 100, stack) == undefined)
+    alert("graph dfs didn't find a goal state")    
+
+  return stack.log();
+  }
+
+
+function
 drawGraph(
   g: Graph
   , paper
@@ -93,106 +235,6 @@ drawLine(paper, x1, y1, x2, y2) {
 
 
 function
-makeGraph(): Graph {
-
-  // Return a copy of the graph for homework 1.
-  
-  function newNode(l, c, cx, cy, n, f?) {
-    return {
-        name: l
-      , cost: c
-      , center: new Coordinate(cx, cy)
-      , neighbors: n
-      , flags: f || ""
-      };
-    }
-
-  var graphConfig = [
-       newNode("A",  8, 0.0,  0.8,  [ ["G1", 8], ["B", 3] ])
-    ,  newNode("B",  2, 0.2,  0.35, [ ["G1", 4], ["J", 2] ])
-    ,  newNode("C",  2, 0.4,  0.6,  [ ["D",  2], ["J", 9], ["F", 7] ])
-    ,  newNode("D",  5, 0.575,0.85, [ ["F",  1], ["E", 2] ])
-    ,  newNode("E",  3, 0.85, 0.8,  [ ["G2", 6], ["F", 3] ])
-    ,  newNode("F",  2, 0.8,  0.1,  [ ["G2", 2] ])
-    ,  newNode("G1", 0, 0.0,  0.1,  [ ], "g")
-    ,  newNode("G2", 0, 1.0,  0.5,  [ ], "g")
-    ,  newNode("J",  1, 0.5,  0.0,  [ ["G1", 1], ["F", 5] ])
-    ,  newNode("S",  6, 0.25, 1.0,  [ ["A",  4], ["C", 3] ], "s")
-    ];
-
-  return new Graph(graphConfig);
-  }
-
-
-function
-BFGraphSearch(g: Graph): any [] {
-
-  var q = new Sequence();
-  q.enq(g.startState());
-  var visited = { };
-  
-  do {
-    var node = q.deq();
-    if (g.isGoalState(node))
-      return q.log();
-
-    var neighbors = g.neighbors(node);
-    neighbors.sort();
-    for (var i = 0; i < neighbors.length; ++i) {
-      var n = neighbors[i];
-      if (!visited[n]) {
-        q.enq(n);
-	visited[n] = true;
-	}
-      }
-    }
-  while (!q.empty());
-
-  alert("graph bfs didn't find a goal state")
-  }
-
-
-function
-dfs(g: Graph, maxDepth, stack: Sequence): any {
-
-  stack.setMaxSize(maxDepth);
-  stack.push(g.startState());
-  var visited = { }
-  
-  do {
-    var node = stack.pop();
-    if (g.isGoalState(node))
-      return node;
-
-    var neighbors = g.neighbors(node);
-    neighbors.sort();
-    for (var i = neighbors.length - 1; i > -1; --i) {
-      var nbr = neighbors[i];
-      if (visited[nbr] == undefined) {
-        stack.push(nbr);
-	visited[nbr] = true;
-	}
-      }
-    }
-  while ((0 < stack.size()) && (stack.size() <= maxDepth));
-
-  return undefined;
-  }
-
-
-function
-DFSGraphSearch(g: Graph): any [] {
-
-  var stack = new Sequence();
-  
-  if (dfs(g, 100, stack) == undefined)
-    alert("graph dfs didn't find a goal state")    
-
-  return stack.log();
-  }
-
-
-function
 IDGraphSearch(g: Graph): any [] {
 
   var stack = new Sequence();
@@ -242,126 +284,35 @@ LCFGraphSearch(g: Graph): any [] {
   }
 
 
-// function
-// LCFSGraphSearch(g: Graph): any [] {
+function
+makeGraph(): Graph {
 
-//   var queue = [ [ g.startState(), 0 ] ];
-//   var log = [ ];
-//   log.push(['enq', g.startState() + ':' + 0]);
+  // Return a copy of the graph for homework 1.
   
-//   do {
-//     var node = queue.shift();
-//     log.push(['deq']);
-//     if (g.isGoalState(node[0]))
-//       return log;
-
-//     var neighbors = g.neighbors(node[0]);
-//     for (var i = neighbors.length - 1; i > -1; --i) {
-//       var n = neighbors[i]
-//       queue.push([n, node[1] + g.edgeCost(node[0], n)]);
-//       }
-//     queue.sort(function (a, b) { return a[1] - b[2]; });
-//     }
-//   while (queue.length > 0);
-
-//   alert("graph lowest-cost first search didn't find a goal state")
-//   }
-
-
-// function
-// BestFSGraphSearch(g: Graph): void {
-
-//   var queue = [ [ g.startState(), 0 ] ];
-
-//   do {
-//     var node = queue.shift();
-//     if (g.isGoalState(node[0]))
-//       return;
-
-//     var neighbors = g.neighbors(node[0]);
-//     for (var i = neighbors.length - 1; i > -1; --i) {
-//       var n = neighbors[i]
-//       queue.push([n, g.edgeCost(node[0], n)]);
-//       }
-//     queue.sort(function (a, b) { return a[1] - b[2]; });
-//     }
-//   while (queue.length > 0);
-
-//   alert("graph best first search didn't find a goal state")
-//   }
-
-
-function
-BestFSGraphSearch(g: Graph): any [] {
-
-  var newSI = function (n: string, p: number): SequenceItem {
-    return new SequenceItem({
-        name: n
-      , priority: p
-      , pRep: n + ':' + p
-      });
+  function newNode(l, c, cx, cy, n, f?) {
+    return {
+        name: l
+      , cost: c
+      , center: new Coordinate(cx, cy)
+      , neighbors: n
+      , flags: f || ""
+      };
     }
 
-  var pq = new MultiPathPrunedSequence(
-    function(a: SequenceItem, b: SequenceItem): boolean {
-      return a.priority() < b.priority();
-      });
+  var graphConfig = [
+       newNode("A",  8, 0.0,  0.8,  [ ["G1", 8], ["B", 3] ])
+    ,  newNode("B",  2, 0.2,  0.35, [ ["G1", 4], ["J", 2] ])
+    ,  newNode("C",  2, 0.4,  0.6,  [ ["D",  2], ["J", 9], ["F", 7] ])
+    ,  newNode("D",  5, 0.575,0.85, [ ["F",  1], ["E", 2] ])
+    ,  newNode("E",  3, 0.85, 0.8,  [ ["G2", 6], ["F", 3] ])
+    ,  newNode("F",  2, 0.8,  0.1,  [ ["G2", 2] ])
+    ,  newNode("G1", 0, 0.0,  0.1,  [ ], "g")
+    ,  newNode("G2", 0, 1.0,  0.5,  [ ], "g")
+    ,  newNode("J",  1, 0.5,  0.0,  [ ["G1", 1], ["F", 5] ])
+    ,  newNode("S",  6, 0.25, 1.0,  [ ["A",  4], ["C", 3] ], "s")
+    ];
 
-  pq.enq(newSI(g.startState(), 0));
-
-  do {
-    var node = pq.deq();
-    if (g.isGoalState(node.name()))
-      return pq.log();
-
-    var neighbors = g.neighbors(node.name());
-    for (var i = neighbors.length - 1; i > -1; --i) {
-      var n = neighbors[i]
-      pq.enq(newSI(n, g.edgeCost(node.name(), n)));
-      }
-    }
-  while (pq.size() > 0);
-
-  alert("graph best first search didn't find a goal state")
-  }
-
-
-function
-ASGraphSearch(g: Graph): any [] {
-
-  var newSI = function (n: string, pathC: number): SequenceItem {
-
-    var nc = g.nodeCost(n);
-
-    return new SequenceItem({
-        name: n
-      , priority: nc + pathC
-      , pRep: n + ':' + pathC + '+' + nc
-      , pathCost: pathC
-      });
-    }
-
-  var pq = new MultiPathPrunedSequence(
-    function(a: SequenceItem, b: SequenceItem): boolean {
-      return a.priority() < b.priority();
-      });
-
-  pq.enq(newSI(g.startState(), 0));
-
-  do {
-    var node = pq.deq();
-    if (g.isGoalState(node.name()))
-      return pq.log();
-
-    var neighbors = g.neighbors(node.name());
-    for (var i = neighbors.length - 1; i > -1; --i) {
-      var n = neighbors[i]
-      pq.enq(newSI(n, node.pathCost() + g.edgeCost(node.name(), n)));
-      }
-    }
-  while (pq.size() > 0);
-
-  alert("graph A* search didn't find a goal state")
+  return new Graph(graphConfig);
   }
 
 
@@ -555,10 +506,10 @@ extends NewSequence {
   unvisited(name: string): boolean {
 
     if (this.visited[name])
-      return true;
+      return false;
     
     this.visited[name] = true;
-    return false;
+    return true;
     }
 
     
@@ -619,36 +570,39 @@ AnimateLog {
     , log		// The log to animate.
     ) {
 
-    this.paper = paper;
-    this.ht = ht;
-    this.wd = wd;
-    this.g = g;
-
     this.nextStep = 0;
     
-    this.fontSize = Math.round(ht*0.8);
-    this.msgFontSize = Math.round(this.fontSize*0.5);
+    var fontSize = Math.round(ht*0.8);
+    var msgFontSize = Math.round(fontSize*0.5);
 
-    this.qRep = paper.text(ul.x() + 20, ul.y() + ht*0.5, "hello").attr({
+    this.history = this.fillHistory(log);
+
+    var nameWd = this.findNameWd(paper, this.history, fontSize);
+    var gap = 5;
+    
+    this.poppedRep = paper.text(
+      ul.x() + gap + nameWd/2, ul.y() + ht*0.5, "").attr({
         stroke: foregroundColor
       , fill: foregroundColor
-      , 'font-size': this.fontSize
-      , 'text-anchor': "start"
+      , 'font-size': fontSize
+      , 'text-anchor': "middle"
       });
-    this.poppedRep = paper.text(ul.x(), ul.y() + ht*0.5, "").attr({
+    drawLine(paper,
+      ul.x() + 2*gap + nameWd, ul.y() + ht*0.1,
+      ul.x() + 2*gap + nameWd, ul.y() + ht*0.9)
+    this.qRep = paper.text(ul.x() + nameWd + 3*gap, ul.y() + ht*0.5, "").attr({
         stroke: foregroundColor
       , fill: foregroundColor
-      , 'font-size': this.fontSize
+      , 'font-size': fontSize
       , 'text-anchor': "start"
       });
-    this.msgRep = this.paper.text(ul.x() + this.wd - 10, ul.y(), "")
+    this.msgRep = paper.text(ul.x() + wd - gap, ul.y() + ht*0.5, "")
       .attr({
 	stroke: foregroundColor
       , fill: foregroundColor
-      , 'font-size': this.msgFontSize
+      , 'font-size': msgFontSize
       , 'text-anchor': "end"
       })
-    this.history = this.fillHistory(log);
     }
 
 
@@ -723,25 +677,34 @@ AnimateLog {
     }
 
 
+  private
+  findNameWd(paper, log, fs: number) {
+
+    var nwd = -1;
+    var scratch = paper.text(-100, -100, 100, 100, "").attr('font-size', fs);
+
+    setIterate(log, function (n) {
+      scratch.attr('text', n.lastPopped);
+      var bb = scratch.getBBox();
+      nwd = Math.max(bb.width, nwd);
+      });
+    
+    scratch.remove();
+    
+    return nwd;
+    }
+
+
   step() {
     this.drawQ(this.history[this.nextStep]);
     this.nextStep = (this.nextStep + 1) % this.history.length;
     }
 
 
-  private paper;
-  private ht: number;
-  private wd: number;
-  private g: Graph;
-
   private nextStep: number; 
   private history: any [];
-
-  private fontSize;
-  private msgFontSize;
 
   private qRep;
   private poppedRep;
   private msgRep;
-  
   }
