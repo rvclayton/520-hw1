@@ -1,6 +1,7 @@
 /// <reference path = "Coordinate.ts"/>
 /// <reference path = "utils.ts"/>
 
+
 class
 Graph {
 
