@@ -158,18 +158,46 @@ drawGraph(
   ): void {
 
 
+  var drawArrow = function (paper, tailX, tailY, headX, headY): void {
+
+    var arrowht = nodeRadius*0.4
+    var arrowwd = arrowht*0.8
+    
+    drawLine(paper, tailX, tailY, headX, headY);
+
+    var a = Math.atan2(headY - tailY, headX - tailX)*180/Math.PI;
+    var t = 't' + headX + ',' + headY + 'R' + a + ',' + headX + ',' + headY;
+
+    var ah = paper.path(
+      'M-' + arrowht + ' ' + arrowwd/2 + 'L0 0L-' + arrowht + ' -' + arrowwd/2);
+    ah.transform(t);
+    ah.attr({ stroke: foregroundColor });
+    }
+
+
   var drawEdge = function (e): void {
 
     var fromC = transCoord(e.fromNode.center);
     var toC = transCoord(e.toNode.center);
 
-    drawLine(paper, fromC.x(), fromC.y(), toC.x(), toC.y());
+    var t = nodeRadius/Math.sqrt(
+      (fromC.x() - toC.x())*(fromC.x() - toC.x()) +
+      (fromC.y() - toC.y())*(fromC.y() - toC.y()))
 
-    var lx = (fromC.x() + toC.x())/2;
-    var ly = (fromC.y() + toC.y())/2;
+    console.log('t = ' + t);
     
+    var fromX = fromC.x() + (toC.x() - fromC.x())*t;
+    var fromY = fromC.y() + (toC.y() - fromC.y())*t;
+    var toX = fromC.x() + (toC.x() - fromC.x())*(1 - t);
+    var toY = fromC.y() + (toC.y() - fromC.y())*(1 - t);
+    
+    drawArrow(paper, fromX, fromY, toX, toY);
+
     if (!options.noEdgeWeights) {
-      paper.circle(lx, ly, nodeRadius/2)
+      var lx = (fromX + toX)/2;
+      var ly = (fromY + toY)/2;
+    
+      paper.circle(lx, ly, nodeRadius*0.4)
 	.attr({ stroke: backgroundColor, fill: backgroundColor });
       drawText(lx, ly, e.cost.toString());
       }
