@@ -26,8 +26,6 @@
       <div id = "hw1graph"></div>
 
       <script>
-	var g = makeGraph();
-	var qht = 50;
 	var ht = 400;
 	var wd = 500;
 
@@ -39,10 +37,10 @@
       </script>
     </div>
 
-    <p>Breadth-FS!</p>
-    <div id = "graphBFS"></div>
-    
     <div style = "display: initial">
+      <p>Breadth-FS!</p>
+      <div id = "graphBFS"></div>
+
       <script>
 	var bareGraph = { noEdgeWeights: true, noCostHeuristics: true };
 	drawSlide("graphBFS", ht, wd, BFGraphSearch, bareGraph);
