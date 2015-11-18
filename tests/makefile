@@ -1,0 +1,15 @@
+tf	= test.js
+tests	:
+	  tsc --out $(tf) ../Coordinate.ts test-Coordinate.ts && nodejs $(tf)
+	  tsc --out $(tf) ../dfs-grid.ts test-dfsgridstate.ts && nodejs $(tf)
+	  tsc --out $(tf) ../dfs-grid.ts test-dfsgridfrontier.ts && nodejs $(tf)
+	  tsc --out $(tf) ../dfs-grid.ts test-dfsgridproblem.ts && nodejs $(tf)
+	  tsc --out $(tf) ../dfs-grid.ts test-dfsgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-bfsgridstate.ts && nodejs $(tf)
+	  tsc --out $(tf) test-bfsgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-bfsgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-hdfsgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-asgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-dpgridstates.ts && nodejs $(tf)
+	  tsc --out $(tf) test-dpgridsolver.ts && nodejs $(tf)
+	  tsc --out $(tf) test-hw1graph.ts && nodejs $(tf)
